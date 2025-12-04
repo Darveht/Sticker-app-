@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>StickerToons Creator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'cn-cyan': '#00AEEF',
+                        'cn-magenta': '#EC008C',
+                        'cn-yellow': '#FFF200',
+                        'cn-black': '#000000',
+                        'cn-white': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        'comic': ['Bangers', 'cursive'],
+                        'ui': ['Rubik', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'hard': '6px 6px 0px 0px #000000',
+                        'hard-sm': '3px 3px 0px 0px #000000',
+                        'hard-hover': '2px 2px 0px 0px #000000',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* ESTILOS GLOBALES Y PATRONES */
+        body {
+            background-color: #00AEEF;
+            overflow: hidden; /* Evitar scroll global */
+        }
+
+        /* Patrón de puntos estilo cómic (Halftone) */
+        .halftone-bg {
+            background-image: radial-gradient(#000 20%, transparent 20%), radial-gradient(#000 20%, transparent 20%);
+            background-color: #00AEEF;
+            background-position: 0 0, 5px 5px;
+            background-size: 10px 10px;
+            opacity: 0.1;
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+        }
+
+        /* Bordes gruesos */
+        .border-comic {
+            border: 4px solid black;
+        }
+
+        /* Animaciones */
+        @keyframes wobble {
+            0% { transform: rotate(0deg); }
+            15% { transform: rotate(-3deg); }
+            30% { transform: rotate(2deg); }
+            45% { transform: rotate(-1deg); }
+            60% { transform: rotate(1deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-wobble-hover:hover {
+            animation: wobble 0.5s ease-in-out;
+        }
+        
+        .pop-in {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Utilidad para ocultar pantallas */
+        .screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: white;
+            transition: opacity 0.25s ease-in-out;
+        }
+        
+        .screen.active {
+            display: flex;
+        }
+
+        /* Input Styles */
+        .comic-input {
+            border: 3px solid black;
+            box-shadow: 4px 4px 0px 0px black;
+            font-family: 'Rubik', sans-serif;
+            font-weight: bold;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .comic-input:focus {
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px 0px #EC008C;
+        }
+
+        /* Checkered Canvas Background */
+        .canvas-wrapper {
+            background-color: #fff;
+            background-image: 
+                linear-gradient(45deg, #ddd 25%, transparent 25%), 
+                linear-gradient(-45deg, #ddd 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #ddd 75%), 
+                linear-gradient(-45deg, transparent 75%, #ddd 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+    </style>
+</head>
+<body class="text-cn-black h-screen w-screen overflow-hidden select-none">
+
+    <!-- BACKGROUND PATTERN -->
+    <div class="halftone-bg"></div>
+
+    <!-- =======================
+         1. SPLASH SCREEN (INTRO) 
+         ======================= -->
+    <section id="screen-splash" class="screen active z-50 bg-cn-yellow flex items-center justify-center">
+        <div class="text-center">
+            <div class="relative inline-block mb-4 animate-bounce">
+                <i data-lucide="zap" class="w-32 h-32 fill-cn-cyan text-black stroke-[3]"></i>
+                <div class="absolute -top-2 -right-4 bg-white border-comic px-2 py-1 transform rotate-12">
+                    <span class="font-comic text-xl">v2.1</span>
+                </div>
+            </div>
+            <h1 class="font-comic text-6xl tracking-wider uppercase text-cn-magenta drop-shadow-[4px_4px_0_#000]">
+                Sticker<br><span class="text-cn-cyan">Toons</span>
+            </h1>
+            <p class="font-ui font-bold mt-4 text-xl loading-dots">Cargando Motor Creativo</p>
+        </div>
+    </section>
+
+    <!-- =======================
+         2. HOME SCREEN (MENU)
+         ======================= -->
+    <section id="screen-home" class="screen z-30 bg-white flex flex-col">
+        <!-- Header -->
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex justify-between items-center shadow-hard-sm z-10">
+            <div class="flex items-center gap-2">
+                <div class="bg-black text-white p-1 rounded-sm"><i data-lucide="ghost" class="w-6 h-6"></i></div>
+                <h2 class="font-comic text-3xl">MENU PRINCIPAL</h2>
+            </div>
+            <!-- Botón de configuración o info -->
+            <button class="bg-cn-cyan text-white p-2 border-2 border-black shadow-hard-hover active:translate-y-1 active:shadow-none">
+                <i data-lucide="settings"></i>
+            </button>
+        </header>
+
+        <!-- Menu Grid -->
+        <div class="flex-1 p-6 flex flex-col justify-center gap-6 overflow-y-auto">
+            
+            <!-- Card: AI Generator -->
+            <div onclick="nav.to('ai')" class="cursor-pointer group relative bg-cn-cyan border-comic shadow-hard p-6 flex flex-col items-center hover:bg-cyan-400 transition-colors">
+                <div class="absolute -top-4 -right-4 bg-cn-magenta text-white border-comic px-3 py-1 font-comic rotate-6 z-10">
+                    ¡POPULAR!
+                </div>
+                <i data-lucide="brain-circuit" class="w-20 h-20 mb-4 text-white stroke-[3] group-hover:scale-110 transition-transform"></i>
+                <h3 class="font-comic text-4xl text-white text-stroke-black">CREAR CON I.A.</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Describe y crea stickers únicos desde cero.</p>
+            </div>
+
+            <!-- Card: Gallery -->
+            <div onclick="document.getElementById('file-input').click()" class="cursor-pointer bg-cn-yellow border-comic shadow-hard p-6 flex flex-col items-center hover:bg-yellow-300 transition-colors">
+                <i data-lucide="image-plus" class="w-20 h-20 mb-4 text-black stroke-[3]"></i>
+                <h3 class="font-comic text-4xl text-black">SUBIR FOTO</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Usa fotos de tu galería.</p>
+                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="app.handleUpload(event)">
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =======================
+         3. AI GENERATOR SCREEN
+         ======================= -->
+    <section id="screen-ai" class="screen z-30 bg-cn-magenta flex flex-col">
+        <header class="bg-black text-white p-4 flex items-center gap-3">
+            <button onclick="nav.back()" class="bg-white text-black p-1 border-2 border-gray-500 rounded-full hover:scale-110 transition-transform">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </button>
+            <h2 class="font-comic text-2xl tracking-wide">LABORATORIO DE STICKERS</h2>
+        </header>
+
+        <div class="flex-1 p-6 flex flex-col gap-6 justify-center">
+            
+            <div class="bg-white border-comic p-4 shadow-hard">
+                <label class="font-comic text-2xl block mb-2">¿QUÉ VAMOS A CREAR?</label>
+                <textarea id="ai-prompt" rows="4" class="w-full bg-gray-100 border-2 border-black p-3 font-ui text-lg focus:bg-white transition-colors outline-none resize-none" placeholder="Ej: Un gato zombie comiendo pizza radioactiva..."></textarea>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+                <span onclick="app.setPrompt('Perro ninja cyborg')" class="bg-cn-yellow border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#PerroNinja</span>
+                <span onclick="app.setPrompt('Alien kawaii tomando café')" class="bg-cn-cyan border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#AlienKawaii</span>
+                <span onclick="app.setPrompt('Calavera rockera fuego')" class="bg-white border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#Calavera</span>
+            </div>
+
+            <button onclick="app.generateAI()" class="mt-4 bg-cn-yellow text-black border-comic shadow-hard py-4 px-6 font-comic text-3xl hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-3">
+                <i data-lucide="wand-2" class="w-8 h-8"></i>
+                ¡GENERAR AHORA!
+            </button>
+            
+            <!-- Loading Indicator Inside -->
+            <div id="ai-loader" class="hidden text-center mt-4">
+                <i data-lucide="loader" class="w-10 h-10 animate-spin mx-auto text-white"></i>
+                <p class="font-comic text-white text-xl mt-2">DIBUJANDO...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- =======================
+         4. EDITOR SCREEN (CANVAS)
+         ======================= -->
+    <section id="screen-editor" class="screen z-30 bg-gray-100 flex flex-col">
+        
+        <!-- Editor Header -->
+        <header class="bg-white border-b-4 border-black p-2 flex justify-between items-center shadow-md">
+            <button onclick="nav.to('home')" class="bg-red-500 text-white p-2 border-2 border-black rounded shadow-sm">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex gap-2">
+                <!-- Se elimina el botón de undo ya que no tiene implementación -->
+                <button onclick="app.clearCanvas()" class="p-2 border-2 border-black rounded hover:bg-red-200 text-red-600"><i data-lucide="trash-2"></i></button>
+            </div>
+            <button onclick="app.export()" class="bg-[#39B54A] text-white p-2 px-4 border-2 border-black rounded shadow-hard-sm font-comic text-lg">
+                GUARDAR
+            </button>
+        </header>
+
+        <!-- Canvas Area -->
+        <div class="flex-1 relative p-4 flex items-center justify-center bg-gray-200 overflow-hidden">
+            <div id="canvas-container" class="relative w-full h-full max-w-md max-h-[80vh] border-comic shadow-hard bg-white canvas-wrapper" style="min-height:320px;">
+                <!-- touch-action none to allow custom gestures -->
+                <canvas id="sticker-canvas" style="width:100%;height:100%;display:block;"></canvas>
+            </div>
+            
+            <!-- Floating Controls for Selection -->
+            <div id="selection-controls" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white border-comic px-4 py-2 flex gap-4 shadow-hard hidden z-20">
+                <button onclick="app.engine.removeBackground()" class="flex flex-col items-center gap-1 text-cn-magenta hover:scale-110 transition-transform">
+                    <i data-lucide="wand-2" class="w-6 h-6"></i>
+                    <span class="text-[10px] font-bold">FONDO</span>
+                </button>
+                <div class="w-0.5 bg-black h-8"></div>
+                <button onclick="app.engine.moveToFront()" class="flex flex-col items-center gap-1 hover:scale-110 transition-transform">
+                    <i data-lucide="arrow-up-to-line" class="w-6 h-6"></i>
+                    <span class="text-[10px] font-bold">SUBIR</span>
+                </button>
+                <button onclick="app.engine.deleteObject()" class="flex flex-col items-center gap-1 text-red-600 hover:scale-110 transition-transform">
+                    <i data-lucide="trash" class="w-6 h-6"></i>
+                    <span class="text-[10px] font-bold">BORRAR</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Toolbar -->
+        <div class="bg-cn-yellow border-t-4 border-black p-3 pb-6 flex justify-around">
+            <button onclick="app.setMode('move')" class="tool-btn bg-white border-2 border-black p-3 rounded-lg shadow-sm active:bg-cn-cyan active:text-white transition-colors flex flex-col items-center w-16">
+                <i data-lucide="hand" class="w-6 h-6"></i>
+                <span class="font-comic text-sm mt-1">MOVER</span>
+            </button>
+            <button onclick="app.addText()" class="tool-btn bg-white border-2 border-black p-3 rounded-lg shadow-sm active:bg-cn-cyan active:text-white transition-colors flex flex-col items-center w-16">
+                <i data-lucide="type" class="w-6 h-6"></i>
+                <span class="font-comic text-sm mt-1">TEXTO</span>
+            </button>
+            <button onclick="app.addDeco()" class="tool-btn bg-white border-2 border-black p-3 rounded-lg shadow-sm active:bg-cn-cyan active:text-white transition-colors flex flex-col items-center w-16">
+                <i data-lucide="sticker" class="w-6 h-6"></i>
+                <span class="font-comic text-sm mt-1">DECO</span>
+            </button>
+        </div>
+    </section>
+
+    <script>
+        // --- NAVIGATION CONTROLLER ---
+        const nav = {
+            history: ['splash'],
+            to: function(screenId) {
+                // Verificar existencia
+                const target = document.getElementById('screen-' + screenId);
+                if(!target) {
+                    console.warn('Pantalla no encontrada:', screenId);
+                    return;
+                }
+
+                // Ocultar todas las pantallas
+                document.querySelectorAll('.screen').forEach(s => {
+                    s.classList.remove('active');
+                    s.style.opacity = 0;
+                });
+
+                target.classList.add('active');
+                // Forzar repaint/animación suave
+                setTimeout(() => target.style.opacity = 1, 50);
+
+                // Ajustar canvas cuando se muestra el editor
+                if (screenId === 'editor' && app.engine) {
+                    // Small timeout to ensure layout settled
+                    setTimeout(() => app.engine.resize(), 60);
+                }
+
+                // Historial básico
+                const last = this.history[this.history.length - 1];
+                if (!last || last !== screenId) {
+                    this.history.push(screenId);
+                }
+            },
+            back: function() {
+                if (this.history.length > 1) {
+                    // Quitar la pantalla actual
+                    this.history.pop();
+                    // Tomar la previa
+                    const prev = this.history[this.history.length - 1] || 'home';
+                    this.to(prev);
+                } else {
+                    this.to('home');
+                }
+            }
+        };
+
+        // --- STICKER ENGINE (Motor de Dibujo y Lógica) ---
+        class StickerEngine {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                // willReadFrequently improves some pixel ops in modern browsers
+                this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
+                this.objects = []; 
+                this.selection = -1; // índice del objeto seleccionado
+                
+                // Estado para gestos
+                this.isDragging = false;
+                this.lastPos = { x: 0, y: 0 };
+                this.pinchDist = 0;
+                this.pinchAngle = 0;
+
+                this.setupEvents();
+                // Inicial resize en caso de que el contenedor ya tenga tamaño
+                setTimeout(()=> this.resize(), 80);
+            }
+
+            // Sincroniza las dimensiones internas del canvas con su contenedor y DPR
+            resize() {
+                const parent = this.canvas.parentElement;
+                if (!parent) return;
+                const rect = parent.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) return; // evita tamaños 0 cuando está oculto
+
+                const dpr = window.devicePixelRatio || 1;
+                const w = Math.max(1, Math.round(rect.width * dpr));
+                const h = Math.max(1, Math.round(rect.height * dpr));
+                // ajustar canvas físico y CSS
+                this.canvas.width = w;
+                this.canvas.height = h;
+                this.canvas.style.width = rect.width + 'px';
+                this.canvas.style.height = rect.height + 'px';
+
+                // Normalizar el sistema de coordenadas para trabajar en CSS pixels
+                this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                this.draw();
+            }
+
+            setupEvents() {
+                // Eventos Touch (Móvil)
+                this.canvas.addEventListener('touchstart', this.handleStart.bind(this), {passive: false});
+                this.canvas.addEventListener('touchmove', this.handleMove.bind(this), {passive: false});
+                this.canvas.addEventListener('touchend', this.handleEnd.bind(this), {passive: false});
+                
+                // Eventos Mouse (Desktop)
+                this.canvas.addEventListener('mousedown', this.handleStart.bind(this));
+                window.addEventListener('mousemove', this.handleMove.bind(this));
+                window.addEventListener('mouseup', this.handleEnd.bind(this));
+
+                // Para evitar gestos nativos conflictivos en algunos navegadores
+                this.canvas.addEventListener('gesturestart', (e) => e.preventDefault());
+            }
+
+            addObject(obj) {
+                // Normaliza la posición de inicio al centro (en CSS pixels)
+                const rect = this.canvas.getBoundingClientRect();
+                const newObj = {
+                    x: rect.width / 2,
+                    y: rect.height / 2,
+                    rotation: 0,
+                    scale: 1,
+                    ...obj
+                };
+                this.objects.push(newObj);
+                this.selection = this.objects.length - 1;
+                this.draw();
+                this.updateUI();
+            }
+
+            draw() {
+                // Limpiar canvas en CSS pixels (context ya escalado por setTransform)
+                const rect = this.canvas.getBoundingClientRect();
+                this.ctx.clearRect(0, 0, rect.width, rect.height);
+                
+                this.objects.forEach((obj, idx) => {
+                    this.ctx.save();
+                    this.ctx.translate(obj.x, obj.y);
+                    this.ctx.rotate(obj.rotation);
+                    this.ctx.scale(obj.scale, obj.scale);
+
+                    if (obj.type === 'img') {
+                        this.ctx.drawImage(obj.img, -obj.width/2, -obj.height/2, obj.width, obj.height);
+                    } else if (obj.type === 'text') {
+                        // El font debe reestablecerse antes de dibujar
+                        this.ctx.font = `bold ${obj.size}px Bangers`;
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        // Trazo (Stroke)
+                        this.ctx.lineWidth = 5;
+                        this.ctx.strokeStyle = 'black';
+                        this.ctx.strokeText(obj.text, 0, 0);
+                        // Relleno (Fill)
+                        this.ctx.fillStyle = obj.color;
+                        this.ctx.fillText(obj.text, 0, 0);
+                    }
+
+                    // Caja de Selección
+                    if (idx === this.selection) {
+                        let w = 100, h = 50; 
+                        if (obj.type === 'img') {
+                             w = obj.width; 
+                             h = obj.height;
+                        } else if (obj.type === 'text') {
+                             // Reestablecer font para medir texto
+                             this.ctx.font = `bold ${obj.size}px Bangers`; 
+                             const metrics = this.ctx.measureText(obj.text);
+                             w = metrics.width + 10;
+                             h = obj.size + 10;
+                        }
+                        
+                        this.ctx.strokeStyle = '#EC008C';
+                        this.ctx.lineWidth = 2 / (obj.scale || 1);
+                        this.ctx.setLineDash([10, 5]);
+                        this.ctx.strokeRect((-w/2) - 10, (-h/2) - 10, w + 20, h + 20);
+                        this.ctx.setLineDash([]);
+                    }
+
+                    this.ctx.restore();
+                });
+            }
+
+            // Lógica de Gestos
+            getPos(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                let clientX, clientY;
+                if (e.touches && e.touches[0]) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                return { 
+                    x: clientX - rect.left, 
+                    y: clientY - rect.top 
+                };
+            }
+
+            handleStart(e) {
+                if (e) e.preventDefault();
+                const pos = this.getPos(e);
+
+                // Detección de colisión (Hit detection) por distancia simple
+                let clicked = -1;
+                for(let i=this.objects.length-1; i>=0; i--) {
+                    const obj = this.objects[i];
+                    const dist = Math.hypot(pos.x - obj.x, pos.y - obj.y);
+                    const radius = ((obj.width || obj.size || 100) * (obj.scale || 1)) / 2;
+                    
+                    // Mejoramos el área de detección para dispositivos móviles
+                    if(dist < radius + 50) { 
+                        clicked = i;
+                        break;
+                    }
+                }
+
+                this.selection = clicked;
+                this.updateUI();
+                
+                if(clicked !== -1) {
+                    this.isDragging = true;
+                    this.lastPos = pos;
+                    
+                    // Inicialización de gestos de pinza (pinch/rotate)
+                    if(e.touches && e.touches.length === 2) {
+                        this.pinchDist = Math.hypot(
+                            e.touches[0].clientX - e.touches[1].clientX,
+                            e.touches[0].clientY - e.touches[1].clientY
+                        );
+                        this.pinchAngle = Math.atan2(
+                            e.touches[1].clientY - e.touches[0].clientY,
+                            e.touches[1].clientX - e.touches[0].clientX
+                        );
+                    }
+                } else {
+                    this.isDragging = false;
+                }
+                this.draw();
+            }
+
+            handleMove(e) {
+                if (e) e.preventDefault();
+                if(!this.isDragging || this.selection === -1) return;
+
+                const obj = this.objects[this.selection];
+
+                // Pinza / Rotación
+                if(e.touches && e.touches.length === 2) {
+                    const dist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    const angle = Math.atan2(
+                        e.touches[1].clientY - e.touches[0].clientY,
+                        e.touches[1].clientX - e.touches[0].clientX
+                    );
+
+                    if (this.pinchDist > 0) {
+                        const scaleFactor = dist / this.pinchDist;
+                        obj.scale = Math.max(0.2, Math.min(obj.scale * scaleFactor, 5));
+                    }
+                    obj.rotation += (angle - this.pinchAngle);
+
+                    this.pinchDist = dist;
+                    this.pinchAngle = angle;
+                } else {
+                    // Arrastre (Drag)
+                    const pos = this.getPos(e);
+                    obj.x += (pos.x - this.lastPos.x);
+                    obj.y += (pos.y - this.lastPos.y);
+                    this.lastPos = pos;
+                }
+                this.draw();
+            }
+
+            handleEnd(e) {
+                if (e) e.preventDefault();
+                this.isDragging = false;
+                this.pinchDist = 0;
+            }
+
+            // Funcionalidades de edición
+            removeBackground() {
+                if(this.selection === -1) return;
+                const obj = this.objects[this.selection];
+                if(obj.type !== 'img') return;
+
+                // Lógica de remoción de fondo (asumiendo color de esquina)
+                const temp = document.createElement('canvas');
+                temp.width = obj.width;
+                temp.height = obj.height;
+                const tCtx = temp.getContext('2d');
+                tCtx.drawImage(obj.img, 0, 0, obj.width, obj.height);
+                
+                let imageData;
+                try {
+                    imageData = tCtx.getImageData(0,0, temp.width, temp.height);
+                } catch (err) {
+                    console.warn('No se puede acceder a imageData (problema CORS).');
+                    return;
+                }
+                const data = imageData.data;
+                
+                const r0=data[0], g0=data[1], b0=data[2];
+                const tolerance = 50; 
+
+                for(let i=0; i<data.length; i+=4) {
+                    const dist = Math.sqrt(
+                        (data[i] - r0)**2 + 
+                        (data[i+1] - g0)**2 + 
+                        (data[i+2] - b0)**2
+                    );
+                    
+                    if(dist < tolerance) { 
+                        data[i+3] = 0; // Transparente
+                    }
+                }
+                
+                tCtx.putImageData(imageData, 0, 0);
+                
+                const newImg = new Image();
+                newImg.src = temp.toDataURL();
+                newImg.onload = () => {
+                    obj.img = newImg;
+                    this.draw();
+                }
+            }
+
+            deleteObject() {
+                if(this.selection !== -1) {
+                    this.objects.splice(this.selection, 1);
+                    this.selection = -1;
+                    this.draw();
+                    this.updateUI();
+                }
+            }
+            
+            moveToFront() {
+                 if(this.selection !== -1) {
+                    const obj = this.objects.splice(this.selection, 1)[0];
+                    this.objects.push(obj);
+                    this.selection = this.objects.length - 1;
+                    this.draw();
+                 }
+            }
+
+            updateUI() {
+                // Muestra u oculta los controles de edición flotantes
+                const controls = document.getElementById('selection-controls');
+                if(this.selection !== -1) {
+                    controls.classList.remove('hidden');
+                    controls.classList.add('flex');
+                } else {
+                    controls.classList.add('hidden');
+                    controls.classList.remove('flex');
+                }
+            }
+        }
+
+        // --- APP CONTROLLER ---
+        const app = {
+            apiKey: "", // Pon tu API key aquí si dispones de una; si no, hay fallback local.
+            engine: null,
+
+            init: function() {
+                // Lanzar icons lucide
+                lucide.createIcons();
+
+                // Instanciar motor y listeners
+                this.engine = new StickerEngine('sticker-canvas');
+
+                // Listener de resize global
+                window.addEventListener('resize', () => {
+                    if(this.engine) this.engine.resize();
+                });
+
+                // Temporizador de Splash: Navega directamente a 'home'
+                setTimeout(() => {
+                    nav.to('home');
+                }, 1200); 
+            },
+
+            handleUpload: function(e) {
+                const file = e.target.files[0];
+                if(!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => this.loadImageToEditor(ev.target.result);
+                reader.readAsDataURL(file);
+                // reset input for repeated uploads
+                e.target.value = '';
+            },
+
+            loadImageToEditor: function(src) {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => {
+                    // Normaliza el tamaño de la imagen para rendimiento
+                    const temp = document.createElement('canvas');
+                    const maxDim = 600;
+                    const scale = Math.min(maxDim/img.width, maxDim/img.height, 1);
+                    temp.width = Math.round(img.width * scale);
+                    temp.height = Math.round(img.height * scale);
+                    temp.getContext('2d').drawImage(img, 0, 0, temp.width, temp.height);
+
+                    const finalImg = new Image();
+                    finalImg.src = temp.toDataURL();
+                    finalImg.onload = () => {
+                        nav.to('editor');
+                        // asegurar resize antes de añadir
+                        setTimeout(() => {
+                            this.engine.addObject({
+                                type: 'img',
+                                img: finalImg,
+                                width: temp.width,
+                                height: temp.height
+                            });
+                        }, 80);
+                    };
+                };
+                img.onerror = () => {
+                    this.showMessage('No se pudo cargar la imagen (posible problema CORS o archivo corrupto).');
+                };
+                img.src = src;
+            },
+
+            setPrompt: function(txt) {
+                document.getElementById('ai-prompt').value = txt;
+            },
+
+            generateAI: async function() {
+                const prompt = document.getElementById('ai-prompt').value.trim();
+                if(!prompt) return this.showMessage('¡Escribe una descripción para generar un sticker!');
+
+                const loader = document.getElementById('ai-loader');
+                loader.classList.remove('hidden');
+
+                try {
+                    // Si no hay API Key, hacemos un fallback local sencillo (placeholder)
+                    if(!this.apiKey) {
+                        const temp = document.createElement('canvas');
+                        temp.width = 768;
+                        temp.height = 768;
+                        const t = temp.getContext('2d');
+                        t.fillStyle = '#ffffff';
+                        t.fillRect(0,0,temp.width,temp.height);
+                        // dibujo simple y texto del prompt para ver resultado
+                        t.fillStyle = '#000000';
+                        t.font = 'bold 48px Bangers';
+                        t.textAlign = 'center';
+                        t.fillText('StickerToons', temp.width/2, 120);
+                        t.font = '28px Rubik';
+                        wrapText(t, prompt, temp.width/2, temp.height/2 - 20, temp.width - 80, 34);
+                        // simple emoji deco
+                        t.font = '140px serif';
+                        t.fillText('✨', temp.width/2, temp.height - 140);
+                        const src = temp.toDataURL('image/png');
+                        this.loadImageToEditor(src);
+                        return;
+                    }
+
+                    // Si tienes API, aquí está la llamada (ejemplo). Mantén la plantilla y añade tu key.
+                    // Nota: la URL y payload deben ajustarse al proveedor real que uses.
+                    const fullPrompt = `sticker art style, vector illustration, white background, comic book style, ${prompt}, vibrant colors, strong outlines`;
+
+                    // Ejemplo de backoff (si decides habilitarlo con API real)
+                    const MAX_RETRIES = 3;
+                    let response;
+                    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+                        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${this.apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                instances: [{ prompt: fullPrompt }],
+                                parameters: { sampleCount: 1 }
+                            })
+                        });
+
+                        if (response.ok) break;
+
+                        if (attempt < MAX_RETRIES - 1) {
+                            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+                        } else {
+                            throw new Error('API call failed after multiple retries.');
+                        }
+                    }
+
+                    const data = await response.json();
+                    if(data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
+                        const src = `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+                        this.loadImageToEditor(src);
+                    } else {
+                        throw new Error('No prediction data received.');
+                    }
+                } catch(e) {
+                    console.error("AI Generation Error:", e);
+                    this.showMessage('Error en la IA. Intenta de nuevo o usa el fallback local si no tienes API key.');
+                } finally {
+                    loader.classList.add('hidden');
+                }
+
+                // helper for placeholder text wrapping
+                function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+                    const words = text.split(' ');
+                    let line = '';
+                    for (let n = 0; n < words.length; n++) {
+                        const testLine = line + words[n] + ' ';
+                        const metrics = ctx.measureText(testLine);
+                        const testWidth = metrics.width;
+                        if (testWidth > maxWidth && n > 0) {
+                            ctx.fillText(line, x, y);
+                            line = words[n] + ' ';
+                            y += lineHeight;
+                        } else {
+                            line = testLine;
+                        }
+                    }
+                    ctx.fillText(line, x, y);
+                }
+            },
+
+            addText: function() {
+                this.showPrompt("Escribe el texto de tu Sticker", "BOOM!", (t) => {
+                    if(t) {
+                        this.engine.addObject({
+                            type: 'text',
+                            text: t,
+                            size: 60,
+                            color: '#FFF200'
+                        });
+                    }
+                });
+            },
+            
+            addDeco: function() {
+                this.showPrompt("Introduce un Emoji de decoración", "🔥", (t) => {
+                    if(t) {
+                        this.engine.addObject({
+                            type: 'text',
+                            text: t,
+                            size: 80,
+                            color: 'white'
+                        });
+                    }
+                });
+            },
+
+            clearCanvas: function() {
+                this.showConfirm("¿Estás seguro de que quieres borrar todos los elementos del lienzo? ¡Esta acción no se puede deshacer!", () => {
+                    this.engine.objects = [];
+                    this.engine.selection = -1;
+                    this.engine.draw();
+                    this.engine.updateUI();
+                    this.showMessage("Lienzo borrado.", '#39B54A');
+                });
+            },
+
+            export: async function() {
+                this.engine.selection = -1;
+                this.engine.draw();
+                const url = this.engine.canvas.toDataURL('image/png');
+                
+                if(navigator.share && navigator.canShare && navigator.canShare({ files: [] })) {
+                    try {
+                        const blob = await (await fetch(url)).blob();
+                        const file = new File([blob], 'sticker.png', {type:'image/png'});
+                        await navigator.share({files: [file], title: 'Mi StickerToons'});
+                        return;
+                    } catch(e) {
+                        console.warn('Share falló, haciendo fallback a descarga', e);
+                    }
+                }
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sticker.png';
+                a.click();
+                this.showMessage("¡Exportación lista! Revisa tus descargas.", '#39B54A');
+            },
+            
+            // Funciones de Modales Personalizados (Reemplazando alerts/confirms/prompts)
+            showMessage: function(msg, bgColor) {
+                const el = document.createElement('div');
+                el.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[100]';
+                const bg = bgColor || 'white';
+                el.innerHTML = `
+                    <div class="border-comic p-6 shadow-hard pop-in max-w-xs w-full text-center" style="background:${bg};">
+                        <p class="font-ui font-bold mb-4">${msg}</p>
+                        <button id="msg-ok" class="bg-cn-cyan text-white border-comic shadow-hard-sm px-4 py-2 font-comic text-lg hover:bg-cyan-400">¡ENTENDIDO!</button>
+                    </div>
+                `;
+                document.body.appendChild(el);
+                document.getElementById('msg-ok').onclick = () => document.body.removeChild(el);
+            },
+            
+            showConfirm: function(msg, onConfirm) {
+                const el = document.createElement('div');
+                el.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[100]';
+                el.innerHTML = `
+                    <div class="bg-white border-comic p-6 shadow-hard pop-in max-w-xs w-full text-center">
+                        <p class="font-ui font-bold mb-4">${msg}</p>
+                        <div class="flex justify-center gap-4">
+                            <button id="confirm-ok" class="bg-red-500 text-white border-comic shadow-hard-sm px-4 py-2 font-comic text-lg hover:bg-red-600">SÍ</button>
+                            <button id="confirm-cancel" class="bg-gray-300 text-black border-comic shadow-hard-sm px-4 py-2 font-comic text-lg hover:bg-gray-400">NO</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(el);
+
+                document.getElementById('confirm-ok').onclick = () => {
+                    onConfirm();
+                    document.body.removeChild(el);
+                };
+                
+                document.getElementById('confirm-cancel').onclick = () => {
+                    document.body.removeChild(el);
+                };
+            },
+            
+            showPrompt: function(msg, placeholder, onResult) {
+                const el = document.createElement('div');
+                el.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[100]';
+                el.innerHTML = `
+                    <div class="bg-cn-yellow border-comic p-6 shadow-hard pop-in max-w-xs w-full text-center">
+                        <p class="font-comic text-xl mb-4">${msg}</p>
+                        <input id="prompt-input" type="text" placeholder="${placeholder}" class="comic-input w-full p-3 mb-4 rounded-none text-center">
+                        <div class="flex justify-center gap-4">
+                            <button id="prompt-ok" class="bg-cn-cyan text-white border-comic shadow-hard-sm px-4 py-2 font-comic text-lg hover:bg-cyan-400">ACEPTAR</button>
+                            <button id="prompt-cancel" class="bg-gray-300 text-black border-comic shadow-hard-sm px-4 py-2 font-comic text-lg hover:bg-gray-400">CANCELAR</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(el);
+                
+                const input = document.getElementById('prompt-input');
+                setTimeout(() => input.focus(), 50);
+                
+                document.getElementById('prompt-ok').onclick = () => {
+                    onResult(input.value);
+                    document.body.removeChild(el);
+                };
+                
+                document.getElementById('prompt-cancel').onclick = () => {
+                    onResult(null);
+                    document.body.removeChild(el);
+                };
+            }
+        };
+
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
