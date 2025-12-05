@@ -257,45 +257,7 @@
         </header>
 
         <!-- Menu Grid -->
-        <div class="screen-content flex flex-col gap-6">
-            
-            <!-- Welcome Banner -->
-            <div class="relative bg-gradient-to-r from-cn-magenta to-cn-cyan border-b-4 border-black shadow-lg p-6">
-                <div class="relative z-10">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="bg-white border-2 border-black p-2 rounded-lg">
-                            <i data-lucide="sparkles" class="w-8 h-8 text-cn-magenta"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-comic text-2xl text-white drop-shadow-[2px_2px_0_#000]">BIENVENIDO A ZAMBIK</h3>
-                            <p class="font-ui font-bold text-white/90 text-sm">Crea stickers increíbles con IA</p>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="bg-white/20 border-2 border-white/40 p-3 rounded text-center">
-                            <p class="font-comic text-xl text-white">∞</p>
-                            <p class="font-ui text-xs text-white/90 font-bold">Ilimitado</p>
-                        </div>
-                        <div class="bg-white/20 border-2 border-white/40 p-3 rounded text-center">
-                            <p class="font-comic text-xl text-white">🎨</p>
-                            <p class="font-ui text-xs text-white/90 font-bold">Creativo</p>
-                        </div>
-                        <div class="bg-white/20 border-2 border-white/40 p-3 rounded text-center">
-                            <p class="font-comic text-xl text-white">⚡</p>
-                            <p class="font-ui text-xs text-white/90 font-bold">Rápido</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="px-6">
-            
-                <!-- Section Title -->
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="flex-1 h-1 bg-black"></div>
-                    <h4 class="font-comic text-xl text-black">HERRAMIENTAS</h4>
-                    <div class="flex-1 h-1 bg-black"></div>
-                </div>
+        <div class="screen-content p-6 pt-2 flex flex-col gap-6">
             
             <!-- Card: AI Chat -->
             <div onclick="nav.to('chat')" class="cursor-pointer group relative bg-cn-magenta border-comic shadow-hard p-6 flex flex-col items-center hover:bg-pink-600 transition-colors">
@@ -332,12 +294,11 @@
                 <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Usa tu cámara para crear stickers.</p>
             </div>
 
-                <!-- Card: Mis Creaciones -->
-                <div onclick="nav.to('gallery')" class="cursor-pointer bg-white border-comic shadow-hard p-6 flex flex-col items-center hover:bg-gray-100 transition-colors">
-                    <i data-lucide="images" class="w-20 h-20 mb-4 text-cn-magenta stroke-[3]"></i>
-                    <h3 class="font-comic text-4xl text-cn-magenta">MIS CREACIONES</h3>
-                    <p class="font-ui font-bold text-center mt-2 bg-gray-100 p-2 border-2 border-black text-sm">Ve tus stickers guardados.</p>
-                </div>
+            <!-- Card: Mis Creaciones -->
+            <div onclick="nav.to('gallery')" class="cursor-pointer bg-white border-comic shadow-hard p-6 flex flex-col items-center hover:bg-gray-100 transition-colors">
+                <i data-lucide="images" class="w-20 h-20 mb-4 text-cn-magenta stroke-[3]"></i>
+                <h3 class="font-comic text-4xl text-cn-magenta">MIS CREACIONES</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-gray-100 p-2 border-2 border-black text-sm">Ve tus stickers guardados.</p>
             </div>
 
         </div>
