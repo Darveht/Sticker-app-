@@ -158,109 +158,71 @@
                 <div class="bg-black text-white p-1 rounded-sm"><i data-lucide="ghost" class="w-6 h-6"></i></div>
                 <h2 class="font-comic text-3xl">MENU PRINCIPAL</h2>
             </div>
-            <!-- Botón de configuración -->
-            <button onclick="nav.to('settings')" class="bg-cn-cyan text-white p-2 border-2 border-black shadow-hard-hover active:translate-y-1 active:shadow-none hover:bg-cyan-400 transition-colors">
-                <i data-lucide="settings" class="w-6 h-6"></i>
+            <!-- Botón de menú -->
+            <button onclick="app.toggleConfigMenu()" class="bg-cn-cyan text-white p-2 border-2 border-black shadow-hard-hover active:translate-y-1 active:shadow-none hover:bg-cyan-400 transition-colors">
+                <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
         </header>
 
         <!-- Menu Grid -->
-        <div class="flex-1 p-4 overflow-y-auto">
+        <div class="flex-1 p-6 flex flex-col justify-center gap-6 overflow-y-auto">
             
-            <!-- Sección Principal -->
-            <div class="mb-6">
-                <h3 class="font-comic text-2xl mb-4 text-center bg-cn-magenta text-white border-comic p-2 shadow-hard-sm">🎨 CREAR STICKERS</h3>
-                <div class="grid grid-cols-1 gap-4">
-                    <!-- Card: AI Generator -->
-                    <div onclick="nav.to('ai')" class="cursor-pointer group relative bg-cn-cyan border-comic shadow-hard p-4 flex items-center hover:bg-cyan-400 transition-colors">
-                        <div class="absolute -top-2 -right-2 bg-cn-magenta text-white border-comic px-2 py-1 font-comic rotate-6 z-10 text-xs">
-                            ¡HOT!
-                        </div>
-                        <i data-lucide="brain-circuit" class="w-16 h-16 mr-4 text-white stroke-[3] group-hover:scale-110 transition-transform"></i>
-                        <div class="flex-1">
-                            <h4 class="font-comic text-2xl text-white">CREAR CON I.A.</h4>
-                            <p class="font-ui font-bold text-white/90 text-sm">Describe y crea stickers únicos</p>
-                        </div>
-                    </div>
-
-                    <!-- Card: Gallery -->
-                    <div onclick="document.getElementById('file-input').click()" class="cursor-pointer bg-cn-yellow border-comic shadow-hard p-4 flex items-center hover:bg-yellow-300 transition-colors">
-                        <i data-lucide="image-plus" class="w-16 h-16 mr-4 text-black stroke-[3]"></i>
-                        <div class="flex-1">
-                            <h4 class="font-comic text-2xl text-black">SUBIR FOTO</h4>
-                            <p class="font-ui font-bold text-black/80 text-sm">Usa fotos de tu galería</p>
-                        </div>
-                        <input type="file" id="file-input" class="hidden" accept="image/*" onchange="app.handleUpload(event)">
-                    </div>
+            <!-- Card: AI Generator -->
+            <div onclick="nav.to('ai')" class="cursor-pointer group relative bg-cn-cyan border-comic shadow-hard p-6 flex flex-col items-center hover:bg-cyan-400 transition-colors">
+                <div class="absolute -top-4 -right-4 bg-cn-magenta text-white border-comic px-3 py-1 font-comic rotate-6 z-10">
+                    ¡POPULAR!
                 </div>
+                <i data-lucide="brain-circuit" class="w-20 h-20 mb-4 text-white stroke-[3] group-hover:scale-110 transition-transform"></i>
+                <h3 class="font-comic text-4xl text-white text-stroke-black">CREAR CON I.A.</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Describe y crea stickers únicos desde cero.</p>
             </div>
 
-            <!-- Sección Herramientas -->
-            <div class="mb-6">
-                <h3 class="font-comic text-2xl mb-4 text-center bg-cn-cyan text-white border-comic p-2 shadow-hard-sm">🛠️ HERRAMIENTAS</h3>
-                <div class="grid grid-cols-2 gap-3">
-                    <div onclick="nav.to('templates')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex flex-col items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="layout-template" class="w-12 h-12 mb-2 text-cn-magenta stroke-[3]"></i>
-                        <span class="font-comic text-lg text-center">PLANTILLAS</span>
-                    </div>
-                    <div onclick="nav.to('gallery')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex flex-col items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="images" class="w-12 h-12 mb-2 text-cn-magenta stroke-[3]"></i>
-                        <span class="font-comic text-lg text-center">GALERÍA</span>
-                    </div>
-                </div>
+            <!-- Card: Gallery -->
+            <div onclick="document.getElementById('file-input').click()" class="cursor-pointer bg-cn-yellow border-comic shadow-hard p-6 flex flex-col items-center hover:bg-yellow-300 transition-colors">
+                <i data-lucide="image-plus" class="w-20 h-20 mb-4 text-black stroke-[3]"></i>
+                <h3 class="font-comic text-4xl text-black">SUBIR FOTO</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Usa fotos de tu galería.</p>
+                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="app.handleUpload(event)">
             </div>
 
-            <!-- Sección Configuración -->
-            <div class="mb-6">
-                <h3 class="font-comic text-2xl mb-4 text-center bg-cn-yellow text-black border-comic p-2 shadow-hard-sm">⚙️ CONFIGURACIÓN</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <div onclick="nav.to('settings')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="settings" class="w-10 h-10 mr-3 text-gray-600 stroke-[3]"></i>
-                        <div class="flex-1">
-                            <span class="font-comic text-lg block">AJUSTES</span>
-                            <span class="font-ui text-sm text-gray-600">Personaliza la app</span>
-                        </div>
-                    </div>
-                    <div onclick="nav.to('export-settings')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="download" class="w-10 h-10 mr-3 text-gray-600 stroke-[3]"></i>
-                        <div class="flex-1">
-                            <span class="font-comic text-lg block">EXPORTAR</span>
-                            <span class="font-ui text-sm text-gray-600">Calidad y formato</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sección Soporte -->
-            <div class="mb-6">
-                <h3 class="font-comic text-2xl mb-4 text-center bg-green-500 text-white border-comic p-2 shadow-hard-sm">🆘 SOPORTE</h3>
-                <div class="grid grid-cols-1 gap-3">
-                    <div onclick="nav.to('help')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="help-circle" class="w-10 h-10 mr-3 text-green-600 stroke-[3]"></i>
-                        <div class="flex-1">
-                            <span class="font-comic text-lg block">AYUDA</span>
-                            <span class="font-ui text-sm text-gray-600">Guías y tutoriales</span>
-                        </div>
-                    </div>
-                    <div onclick="nav.to('contact')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="mail" class="w-10 h-10 mr-3 text-green-600 stroke-[3]"></i>
-                        <div class="flex-1">
-                            <span class="font-comic text-lg block">CONTACTO</span>
-                            <span class="font-ui text-sm text-gray-600">Reportar problemas</span>
-                        </div>
-                    </div>
-                    <div onclick="nav.to('about')" class="cursor-pointer bg-white border-comic shadow-hard p-3 flex items-center hover:bg-gray-100 transition-colors">
-                        <i data-lucide="info" class="w-10 h-10 mr-3 text-green-600 stroke-[3]"></i>
-                        <div class="flex-1">
-                            <span class="font-comic text-lg block">ACERCA DE</span>
-                            <span class="font-ui text-sm text-gray-600">Versión y créditos</span>
-                        </div>
-                    </div>
-                </div>
+            <!-- Card: Mis Creaciones -->
+            <div onclick="nav.to('gallery')" class="cursor-pointer bg-white border-comic shadow-hard p-6 flex flex-col items-center hover:bg-gray-100 transition-colors">
+                <i data-lucide="images" class="w-20 h-20 mb-4 text-cn-magenta stroke-[3]"></i>
+                <h3 class="font-comic text-4xl text-cn-magenta">MIS CREACIONES</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-gray-100 p-2 border-2 border-black text-sm">Ve tus stickers guardados.</p>
             </div>
 
         </div>
     </section>
+
+    <!-- Menú Desplegable de Configuración -->
+    <div id="config-menu" class="hidden fixed top-16 right-4 bg-white border-comic shadow-hard z-50 w-64">
+        <div class="p-2">
+            <div class="bg-cn-yellow border-2 border-black p-2 mb-2">
+                <h3 class="font-comic text-lg text-center">CONFIGURACIÓN</h3>
+            </div>
+            
+            <div onclick="nav.to('settings'); app.hideConfigMenu()" class="cursor-pointer p-3 hover:bg-gray-100 border-b border-gray-200 flex items-center gap-3">
+                <i data-lucide="settings" class="w-5 h-5 text-gray-600"></i>
+                <span class="font-ui font-bold">Ajustes</span>
+            </div>
+            
+            <div onclick="nav.to('help'); app.hideConfigMenu()" class="cursor-pointer p-3 hover:bg-gray-100 border-b border-gray-200 flex items-center gap-3">
+                <i data-lucide="help-circle" class="w-5 h-5 text-green-600"></i>
+                <span class="font-ui font-bold">Ayuda</span>
+            </div>
+            
+            <div onclick="nav.to('contact'); app.hideConfigMenu()" class="cursor-pointer p-3 hover:bg-gray-100 border-b border-gray-200 flex items-center gap-3">
+                <i data-lucide="mail" class="w-5 h-5 text-green-600"></i>
+                <span class="font-ui font-bold">Contacto</span>
+            </div>
+            
+            <div onclick="nav.to('about'); app.hideConfigMenu()" class="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3">
+                <i data-lucide="info" class="w-5 h-5 text-blue-600"></i>
+                <span class="font-ui font-bold">Acerca de</span>
+            </div>
+        </div>
+    </div>
 
     <!-- =======================
          3. AI GENERATOR SCREEN
@@ -856,6 +818,13 @@
 
                 // Interceptar navegación para secciones placeholder
                 this.setupPlaceholderNavigation();
+                
+                // Cerrar menú al cambiar de pantalla
+                const originalNavTo = nav.to;
+                nav.to = function(screenId) {
+                    app.hideConfigMenu();
+                    return originalNavTo.call(this, screenId);
+                };
             },
 
             setupPlaceholderNavigation: function() {
@@ -1160,6 +1129,36 @@
 
             showExportSettings: function() {
                 this.showMessage('Próximamente: Configuración avanzada de exportación!');
+            },
+
+            // Funciones para el menú desplegable
+            toggleConfigMenu: function() {
+                const menu = document.getElementById('config-menu');
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                    menu.classList.add('pop-in');
+                    // Cerrar al hacer clic fuera
+                    setTimeout(() => {
+                        document.addEventListener('click', this.closeConfigMenuOutside.bind(this));
+                    }, 100);
+                } else {
+                    this.hideConfigMenu();
+                }
+            },
+
+            hideConfigMenu: function() {
+                const menu = document.getElementById('config-menu');
+                menu.classList.add('hidden');
+                menu.classList.remove('pop-in');
+                document.removeEventListener('click', this.closeConfigMenuOutside.bind(this));
+            },
+
+            closeConfigMenuOutside: function(e) {
+                const menu = document.getElementById('config-menu');
+                const button = e.target.closest('button');
+                if (!menu.contains(e.target) && !button) {
+                    this.hideConfigMenu();
+                }
             }
         };
 
