@@ -552,14 +552,36 @@
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
-            <h2 class="font-comic text-3xl tracking-wide">CONTACTO</h2>
+            <h2 class="font-comic text-3xl tracking-wide">SOPORTE</h2>
         </header>
         <div class="screen-content p-6 pt-2">
             <div class="space-y-6">
+                <!-- Buscador -->
+                <div class="bg-white border-comic p-4 shadow-hard">
+                    <div class="flex gap-2">
+                        <input type="text" id="search-input" placeholder="Buscar en artículos..." class="flex-1 comic-input p-3 rounded-none" oninput="app.searchArticles(this.value)">
+                        <button class="bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-xl shadow-hard-sm">
+                            <i data-lucide="search" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Artículos de Ayuda -->
+                <div class="bg-white border-comic p-6 shadow-hard">
+                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-8 h-8"></i>
+                        ARTÍCULOS DE AYUDA
+                    </h3>
+                    <div id="articles-list" class="space-y-3">
+                        <!-- Los artículos se cargarán aquí -->
+                    </div>
+                </div>
+
+                <!-- Contacto Directo -->
                 <div class="bg-cn-yellow border-comic p-6 text-center shadow-hard">
-                    <i data-lucide="mail" class="w-20 h-20 mx-auto mb-4"></i>
-                    <h3 class="font-comic text-3xl mb-3">REPORTAR PROBLEMA</h3>
-                    <p class="font-ui font-bold mb-6 text-lg">Descíbenos qué pasó y te ayudaremos</p>
+                    <i data-lucide="mail" class="w-16 h-16 mx-auto mb-4"></i>
+                    <h3 class="font-comic text-2xl mb-3">¿NO ENCUENTRAS LO QUE BUSCAS?</h3>
+                    <p class="font-ui font-bold mb-4 text-lg">Contáctanos directamente</p>
                     <button onclick="app.openEmail()" class="bg-cn-magenta text-white border-comic px-8 py-4 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
                         ENVIAR EMAIL
                     </button>
@@ -1197,12 +1219,12 @@
             setupNavigation: function() {
                 const originalNavTo = nav.to;
                 nav.to = function(screenId) {
-                    // Cargar galería cuando se abre
                     if (screenId === 'gallery') {
                         app.loadGallery();
                     }
-                    
-                    // Navegación normal
+                    if (screenId === 'contact') {
+                        app.loadArticles();
+                    }
                     originalNavTo.call(this, screenId);
                 };
             },
@@ -1899,6 +1921,107 @@
                 const subject = encodeURIComponent('Soporte Zambik - Reporte de Problema');
                 const body = encodeURIComponent('Hola,\n\nTengo un problema con Zambik:\n\n[Describe tu problema aquí]\n\nGracias!');
                 window.open(`mailto:soporte@zambik.com?subject=${subject}&body=${body}`);
+            },
+            
+            articles: [
+                { id: 1, title: '¿Cómo crear un sticker?', content: 'Para crear un sticker, ve al menú principal y selecciona "CREAR CON IA" o "SUBIR FOTO". Luego describe lo que quieres o sube una imagen. Usa las herramientas de edición para personalizar tu sticker.', keywords: 'crear sticker imagen foto editar' },
+                { id: 2, title: '¿Cómo usar el chat con IA?', content: 'El chat con IA te permite conversar y generar imágenes. Solo escribe tu mensaje o usa palabras como "genera", "crea" o "dibuja" seguido de tu idea para crear imágenes automáticamente.', keywords: 'chat ia inteligencia artificial generar imagen' },
+                { id: 3, title: '¿Cómo funciona el dictado por voz?', content: 'En el chat, toca el botón del micrófono (azul) al lado del campo de texto. Habla tu mensaje y se transcribirá automáticamente. El botón se pondrá rojo mientras graba.', keywords: 'voz dictado micrófono hablar audio grabar' },
+                { id: 4, title: '¿Cómo tomar una foto para sticker?', content: 'En el menú principal, selecciona "TOMAR FOTO". Permite el acceso a la cámara, apunta y toca el botón grande para capturar. La foto irá directo al editor.', keywords: 'foto cámara capturar tomar imagen' },
+                { id: 5, title: '¿Cómo quitar el fondo de una imagen?', content: 'En el editor, selecciona la imagen tocándola. Aparecerán controles flotantes en la parte inferior. Toca el botón "FONDO" con el ícono de varita mágica para remover el fondo automáticamente.', keywords: 'fondo background quitar remover transparente' },
+                { id: 6, title: '¿Dónde están mis stickers guardados?', content: 'Todos tus stickers se guardan automáticamente en "MIS CREACIONES" en el menú principal. Desde ahí puedes verlos, descargarlos o modificarlos.', keywords: 'guardar galería creaciones stickers guardados' },
+                { id: 7, title: '¿Cómo agregar texto a un sticker?', content: 'En el editor, toca el botón "TEXTO" en la barra inferior. Escribe tu texto y aparecerá en el canvas. Puedes moverlo, rotarlo y escalarlo con gestos táctiles.', keywords: 'texto escribir letras agregar añadir' },
+                { id: 8, title: '¿Cómo mover y rotar elementos?', content: 'Toca un elemento para seleccionarlo. Arrastra con un dedo para mover. Usa dos dedos (pellizcar) para escalar y rotar. Los elementos seleccionados tienen un borde rosa.', keywords: 'mover rotar escalar gestos táctil pellizcar' },
+                { id: 9, title: '¿Cómo cambiar el idioma?', content: 'Ve a MENÚ > AJUSTES > IDIOMA. Selecciona tu idioma preferido del menú desplegable. Los cambios se aplican inmediatamente.', keywords: 'idioma lenguaje español inglés cambiar' },
+                { id: 10, title: '¿La app es gratis?', content: 'Sí, Zambik es completamente gratis. Todas las funciones de IA, generación de imágenes y edición están disponibles sin costo ni límites.', keywords: 'gratis precio costo pagar dinero' }
+            ],
+            
+            loadArticles: function() {
+                const container = document.getElementById('articles-list');
+                if (!container) return;
+                
+                container.innerHTML = '';
+                this.articles.forEach(article => {
+                    const div = document.createElement('div');
+                    div.className = 'article-item bg-gray-50 border-2 border-black p-4 cursor-pointer hover:bg-cn-yellow transition-colors';
+                    div.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="help-circle" class="w-6 h-6 text-cn-cyan flex-shrink-0 mt-1"></i>
+                            <div class="flex-1">
+                                <h4 class="font-comic text-lg mb-2">${article.title}</h4>
+                                <p class="font-ui text-sm text-gray-700 article-content hidden">${article.content}</p>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-6 h-6 flex-shrink-0 mt-1 article-arrow"></i>
+                        </div>
+                    `;
+                    div.onclick = () => this.toggleArticle(div);
+                    container.appendChild(div);
+                });
+                lucide.createIcons();
+            },
+            
+            toggleArticle: function(element) {
+                const content = element.querySelector('.article-content');
+                const arrow = element.querySelector('.article-arrow');
+                
+                if (content.classList.contains('hidden')) {
+                    content.classList.remove('hidden');
+                    arrow.style.transform = 'rotate(180deg)';
+                } else {
+                    content.classList.add('hidden');
+                    arrow.style.transform = 'rotate(0deg)';
+                }
+            },
+            
+            searchArticles: function(query) {
+                const container = document.getElementById('articles-list');
+                if (!container) return;
+                
+                const lowerQuery = query.toLowerCase().trim();
+                
+                if (!lowerQuery) {
+                    this.loadArticles();
+                    return;
+                }
+                
+                const filtered = this.articles.filter(article => 
+                    article.title.toLowerCase().includes(lowerQuery) ||
+                    article.content.toLowerCase().includes(lowerQuery) ||
+                    article.keywords.toLowerCase().includes(lowerQuery)
+                );
+                
+                container.innerHTML = '';
+                
+                if (filtered.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-gray-50 border-2 border-black p-6 text-center">
+                            <i data-lucide="search-x" class="w-16 h-16 mx-auto mb-3 text-gray-400"></i>
+                            <p class="font-ui font-bold text-lg">No se encontraron artículos</p>
+                            <p class="font-ui text-sm text-gray-600 mt-2">Intenta con otras palabras clave</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                    return;
+                }
+                
+                filtered.forEach(article => {
+                    const div = document.createElement('div');
+                    div.className = 'article-item bg-gray-50 border-2 border-black p-4 cursor-pointer hover:bg-cn-yellow transition-colors';
+                    div.innerHTML = `
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="help-circle" class="w-6 h-6 text-cn-cyan flex-shrink-0 mt-1"></i>
+                            <div class="flex-1">
+                                <h4 class="font-comic text-lg mb-2">${article.title}</h4>
+                                <p class="font-ui text-sm text-gray-700 article-content hidden">${article.content}</p>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-6 h-6 flex-shrink-0 mt-1 article-arrow"></i>
+                        </div>
+                    `;
+                    div.onclick = () => this.toggleArticle(div);
+                    container.appendChild(div);
+                });
+                
+                lucide.createIcons();
             },
 
             // Funciones para calificar app
