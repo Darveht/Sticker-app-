@@ -1769,25 +1769,37 @@
             
             startVoice: function() {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognition) {
+                    this.showMessage('Tu navegador no soporta reconocimiento de voz.');
+                    return;
+                }
+                
                 this.recognition = new SpeechRecognition();
                 this.recognition.lang = 'es-ES';
                 this.recognition.continuous = true;
                 this.recognition.interimResults = true;
-                this.recognition.maxAlternatives = 3;
+                this.recognition.maxAlternatives = 1;
+                
+                let finalTranscript = '';
                 
                 this.recognition.onstart = () => {
+                    console.log('Voice recognition started');
                     this.isRecording = true;
                     const btn = document.getElementById('voice-btn');
-                    btn.classList.add('recording');
-                    lucide.createIcons();
+                    if (btn) {
+                        btn.classList.add('recording');
+                        lucide.createIcons();
+                    }
                 };
                 
                 this.recognition.onresult = (event) => {
-                    let finalTranscript = '';
+                    console.log('Voice result received');
                     let interimTranscript = '';
                     
                     for (let i = event.resultIndex; i < event.results.length; i++) {
                         const transcript = event.results[i][0].transcript;
+                        console.log('Transcript:', transcript, 'Final:', event.results[i].isFinal);
+                        
                         if (event.results[i].isFinal) {
                             finalTranscript += transcript + ' ';
                         } else {
@@ -1796,28 +1808,36 @@
                     }
                     
                     const input = document.getElementById('chat-input');
-                    if (finalTranscript) {
-                        input.value = (input.value + ' ' + finalTranscript).trim();
-                    } else if (interimTranscript) {
-                        input.placeholder = interimTranscript;
+                    if (input) {
+                        input.value = (finalTranscript + interimTranscript).trim();
                     }
                 };
                 
                 this.recognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
-                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
-                        this.showMessage('Error al reconocer voz. Intenta de nuevo.');
+                    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                        this.showMessage('Permiso de micrófono denegado. Activa el micrófono en la configuración.');
+                    } else if (event.error === 'no-speech') {
+                        this.showMessage('No se detectó voz. Intenta hablar más cerca del micrófono.');
+                    } else if (event.error !== 'aborted') {
+                        this.showMessage('Error: ' + event.error);
                     }
                     this.stopVoice();
                 };
                 
                 this.recognition.onend = () => {
-                    if (this.isRecording) {
-                        this.stopVoice();
-                    }
+                    console.log('Voice recognition ended');
+                    this.stopVoice();
                 };
                 
-                this.recognition.start();
+                try {
+                    this.recognition.start();
+                    console.log('Starting recognition...');
+                } catch(e) {
+                    console.error('Failed to start recognition:', e);
+                    this.showMessage('Error al iniciar reconocimiento de voz.');
+                    this.stopVoice();
+                }
             },
             
             stopVoice: function() {
