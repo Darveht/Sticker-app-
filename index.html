@@ -1771,8 +1771,9 @@
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 this.recognition = new SpeechRecognition();
                 this.recognition.lang = 'es-ES';
-                this.recognition.continuous = false;
-                this.recognition.interimResults = false;
+                this.recognition.continuous = true;
+                this.recognition.interimResults = true;
+                this.recognition.maxAlternatives = 3;
                 
                 this.recognition.onstart = () => {
                     this.isRecording = true;
@@ -1782,18 +1783,38 @@
                 };
                 
                 this.recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById('chat-input').value = transcript;
-                    this.stopVoice();
+                    let finalTranscript = '';
+                    let interimTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+                    
+                    const input = document.getElementById('chat-input');
+                    if (finalTranscript) {
+                        input.value = (input.value + ' ' + finalTranscript).trim();
+                    } else if (interimTranscript) {
+                        input.placeholder = interimTranscript;
+                    }
                 };
                 
                 this.recognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
+                    if (event.error !== 'no-speech' && event.error !== 'aborted') {
+                        this.showMessage('Error al reconocer voz. Intenta de nuevo.');
+                    }
                     this.stopVoice();
                 };
                 
                 this.recognition.onend = () => {
-                    this.stopVoice();
+                    if (this.isRecording) {
+                        this.stopVoice();
+                    }
                 };
                 
                 this.recognition.start();
