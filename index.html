@@ -267,6 +267,13 @@
                 <input type="file" id="file-input" class="hidden" accept="image/*" onchange="app.handleUpload(event)">
             </div>
 
+            <!-- Card: Take Photo -->
+            <div onclick="app.openCamera()" class="cursor-pointer bg-green-400 border-comic shadow-hard p-6 flex flex-col items-center hover:bg-green-500 transition-colors">
+                <i data-lucide="camera" class="w-20 h-20 mb-4 text-white stroke-[3]"></i>
+                <h3 class="font-comic text-4xl text-white">TOMAR FOTO</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Usa tu cámara para crear stickers.</p>
+            </div>
+
             <!-- Card: Mis Creaciones -->
             <div onclick="nav.to('gallery')" class="cursor-pointer bg-white border-comic shadow-hard p-6 flex flex-col items-center hover:bg-gray-100 transition-colors">
                 <i data-lucide="images" class="w-20 h-20 mb-4 text-cn-magenta stroke-[3]"></i>
@@ -594,7 +601,30 @@
     </section>
 
     <!-- =======================
-         10. AI CHAT SCREEN
+         10. CAMERA SCREEN
+         ======================= -->
+    <section id="screen-camera" class="screen z-30 bg-black flex flex-col">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+            <button onclick="app.closeCamera()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <h2 class="font-comic text-3xl tracking-wide">TOMAR FOTO</h2>
+        </header>
+
+        <div class="flex-1 relative flex items-center justify-center">
+            <video id="camera-video" autoplay playsinline class="w-full h-full object-cover"></video>
+            <canvas id="camera-canvas" class="hidden"></canvas>
+        </div>
+
+        <div class="bg-cn-yellow border-t-4 border-black p-6 flex justify-center">
+            <button onclick="app.capturePhoto()" class="bg-cn-magenta text-white border-comic px-8 py-4 rounded-full font-comic text-2xl shadow-hard hover:scale-110 transition-transform">
+                <i data-lucide="camera" class="w-12 h-12"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- =======================
+         11. AI CHAT SCREEN
          ======================= -->
     <section id="screen-chat" class="screen z-30 bg-white flex flex-col">
         <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3">
@@ -1108,6 +1138,7 @@
             savedStickers: [],
             referenceImage: null,
             generationMode: 'new',
+            cameraStream: null,
 
             init: function() {
                 // Lanzar icons lucide
@@ -1167,8 +1198,47 @@
                 const reader = new FileReader();
                 reader.onload = (ev) => this.loadImageToEditor(ev.target.result);
                 reader.readAsDataURL(file);
-                // reset input for repeated uploads
                 e.target.value = '';
+            },
+            
+            openCamera: async function() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: 'environment' } 
+                    });
+                    this.cameraStream = stream;
+                    nav.to('camera');
+                    setTimeout(() => {
+                        const video = document.getElementById('camera-video');
+                        video.srcObject = stream;
+                        lucide.createIcons();
+                    }, 100);
+                } catch(e) {
+                    console.error('Camera error:', e);
+                    this.showMessage('No se pudo acceder a la cámara. Verifica los permisos.');
+                }
+            },
+            
+            closeCamera: function() {
+                if (this.cameraStream) {
+                    this.cameraStream.getTracks().forEach(track => track.stop());
+                    this.cameraStream = null;
+                }
+                nav.back();
+            },
+            
+            capturePhoto: function() {
+                const video = document.getElementById('camera-video');
+                const canvas = document.getElementById('camera-canvas');
+                const context = canvas.getContext('2d');
+                
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0);
+                
+                const imageData = canvas.toDataURL('image/png');
+                this.closeCamera();
+                this.loadImageToEditor(imageData);
             },
 
             loadImageToEditor: function(src) {
@@ -1834,7 +1904,9 @@
 
             showExportSettings: function() {
                 this.showMessage('Próximamente: Configuración avanzada de exportación!');
-            }
+            },
+            
+            setMode: function() {}
         };
 
         window.onload = () => app.init();
