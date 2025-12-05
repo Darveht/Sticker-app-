@@ -159,6 +159,16 @@
             animation: pulse 1s ease-in-out infinite;
             background-color: #EF4444 !important;
         }
+        
+        @keyframes searchSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .search-animate {
+            animation: searchSpin 0.6s ease-in-out;
+        }
     </style>
 </head>
 <body class="text-cn-black h-screen w-screen overflow-hidden select-none">
@@ -599,7 +609,7 @@
                 <div class="bg-white border-comic p-4 shadow-hard">
                     <div class="flex gap-2">
                         <input type="text" id="search-input" placeholder="Buscar en artículos..." class="flex-1 comic-input p-3 rounded-none" oninput="app.searchArticles(this.value)">
-                        <button class="bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-xl shadow-hard-sm">
+                        <button id="search-btn" onclick="app.animateSearch()" class="bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-xl shadow-hard-sm hover:bg-cyan-400 transition-colors">
                             <i data-lucide="search" class="w-6 h-6"></i>
                         </button>
                     </div>
@@ -2050,6 +2060,20 @@
                 } else {
                     content.classList.add('hidden');
                     arrow.style.transform = 'rotate(0deg)';
+                }
+            },
+            
+            animateSearch: function() {
+                const btn = document.getElementById('search-btn');
+                const input = document.getElementById('search-input');
+                
+                if (btn) {
+                    btn.classList.add('search-animate');
+                    setTimeout(() => btn.classList.remove('search-animate'), 600);
+                }
+                
+                if (input) {
+                    this.searchArticles(input.value);
                 }
             },
             
