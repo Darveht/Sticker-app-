@@ -173,8 +173,8 @@
                     ¡POPULAR!
                 </div>
                 <i data-lucide="brain-circuit" class="w-20 h-20 mb-4 text-white stroke-[3] group-hover:scale-110 transition-transform"></i>
-                <h3 class="font-comic text-4xl text-white text-stroke-black">CREAR STICKERS</h3>
-                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Describe y crea stickers únicos desde cero.</p>
+                <h3 class="font-comic text-4xl text-white text-stroke-black">CREAR CON IA</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Describe y crea stickers únicos con inteligencia artificial.</p>
             </div>
 
             <!-- Card: Gallery -->
@@ -248,9 +248,10 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <span onclick="app.setPrompt('Perro ninja cyborg')" class="bg-cn-yellow border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#PerroNinja</span>
-                <span onclick="app.setPrompt('Alien kawaii tomando café')" class="bg-cn-cyan border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#AlienKawaii</span>
-                <span onclick="app.setPrompt('Calavera rockera fuego')" class="bg-white border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#Calavera</span>
+                <span onclick="app.setPrompt('cute cat with sunglasses')" class="bg-cn-yellow border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#GatoCool</span>
+                <span onclick="app.setPrompt('happy pizza slice cartoon')" class="bg-cn-cyan border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#Pizza</span>
+                <span onclick="app.setPrompt('rainbow unicorn kawaii')" class="bg-white border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#Unicornio</span>
+                <span onclick="app.setPrompt('smiling avocado character')" class="bg-cn-magenta border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 text-white">#Aguacate</span>
             </div>
 
             <button onclick="app.generateAI()" class="mt-4 bg-cn-yellow text-black border-comic shadow-hard py-4 px-6 font-comic text-3xl hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-3">
@@ -945,88 +946,32 @@
                 loader.classList.remove('hidden');
 
                 try {
-                    // Si no hay API Key, hacemos un fallback local sencillo (placeholder)
-                    if(!this.apiKey) {
-                        const temp = document.createElement('canvas');
-                        temp.width = 768;
-                        temp.height = 768;
-                        const t = temp.getContext('2d');
-                        t.fillStyle = '#ffffff';
-                        t.fillRect(0,0,temp.width,temp.height);
-                        // dibujo simple y texto del prompt para ver resultado
-                        t.fillStyle = '#000000';
-                        t.font = 'bold 48px Bangers';
-                        t.textAlign = 'center';
-                        t.fillText('StickerToons', temp.width/2, 120);
-                        t.font = '28px Rubik';
-                        wrapText(t, prompt, temp.width/2, temp.height/2 - 20, temp.width - 80, 34);
-                        // simple emoji deco
-                        t.font = '140px serif';
-                        t.fillText('✨', temp.width/2, temp.height - 140);
-                        const src = temp.toDataURL('image/png');
-                        this.loadImageToEditor(src);
-                        return;
-                    }
-
-                    // Si tienes API, aquí está la llamada (ejemplo). Mantén la plantilla y añade tu key.
-                    // Nota: la URL y payload deben ajustarse al proveedor real que uses.
-                    const fullPrompt = `sticker art style, vector illustration, white background, comic book style, ${prompt}, vibrant colors, strong outlines`;
-
-                    // Ejemplo de backoff (si decides habilitarlo con API real)
-                    const MAX_RETRIES = 3;
-                    let response;
-                    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
-                        response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${this.apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                instances: [{ prompt: fullPrompt }],
-                                parameters: { sampleCount: 1 }
-                            })
-                        });
-
-                        if (response.ok) break;
-
-                        if (attempt < MAX_RETRIES - 1) {
-                            await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-                        } else {
-                            throw new Error('API call failed after multiple retries.');
-                        }
-                    }
-
-                    const data = await response.json();
-                    if(data.predictions && data.predictions[0] && data.predictions[0].bytesBase64Encoded) {
-                        const src = `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-                        this.loadImageToEditor(src);
-                    } else {
-                        throw new Error('No prediction data received.');
-                    }
+                    // Usar Pollinations AI - 100% gratis, sin límites
+                    const fullPrompt = encodeURIComponent(`sticker art, ${prompt}, white background, cartoon style, vibrant colors, simple design, vector art`);
+                    const seed = Math.floor(Math.random() * 1000000);
+                    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=512&height=512&seed=${seed}&nologo=true`;
+                    
+                    // Cargar imagen
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    
+                    img.onload = () => {
+                        this.loadImageToEditor(imageUrl);
+                    };
+                    
+                    img.onerror = () => {
+                        throw new Error('Error al cargar imagen de IA');
+                    };
+                    
+                    img.src = imageUrl;
+                    
                 } catch(e) {
                     console.error("AI Generation Error:", e);
-                    this.showMessage('Error en la IA. Intenta de nuevo o usa el fallback local si no tienes API key.');
-                } finally {
+                    this.showMessage('Error al generar imagen. Verifica tu conexión e intenta de nuevo.');
                     loader.classList.add('hidden');
                 }
-
-                // helper for placeholder text wrapping
-                function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-                    const words = text.split(' ');
-                    let line = '';
-                    for (let n = 0; n < words.length; n++) {
-                        const testLine = line + words[n] + ' ';
-                        const metrics = ctx.measureText(testLine);
-                        const testWidth = metrics.width;
-                        if (testWidth > maxWidth && n > 0) {
-                            ctx.fillText(line, x, y);
-                            line = words[n] + ' ';
-                            y += lineHeight;
-                        } else {
-                            line = testLine;
-                        }
-                    }
-                    ctx.fillText(line, x, y);
-                }
             },
+
 
             addText: function() {
                 this.showPrompt("Escribe el texto de tu Sticker", "BOOM!", (t) => {
