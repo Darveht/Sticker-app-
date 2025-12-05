@@ -249,6 +249,44 @@
         <!-- Menu Grid -->
         <div class="screen-content p-6 pt-2 flex flex-col gap-6">
             
+            <!-- Welcome Banner -->
+            <div class="relative bg-gradient-to-r from-cn-magenta to-cn-cyan border-comic shadow-hard p-6 overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-cn-yellow opacity-20 rounded-full -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="bg-white border-2 border-black p-2 rounded-lg">
+                            <i data-lucide="sparkles" class="w-8 h-8 text-cn-magenta"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-comic text-3xl text-white drop-shadow-[2px_2px_0_#000]">BIENVENIDO A ZAMBIK</h3>
+                            <p class="font-ui font-bold text-white/90 text-sm">Crea stickers increíbles con IA</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 mt-4">
+                        <div class="bg-white/20 border-2 border-white/40 p-2 rounded text-center">
+                            <p class="font-comic text-2xl text-white">∞</p>
+                            <p class="font-ui text-xs text-white/90 font-bold">Ilimitado</p>
+                        </div>
+                        <div class="bg-white/20 border-2 border-white/40 p-2 rounded text-center">
+                            <p class="font-comic text-2xl text-white">🎨</p>
+                            <p class="font-ui text-xs text-white/90 font-bold">Creativo</p>
+                        </div>
+                        <div class="bg-white/20 border-2 border-white/40 p-2 rounded text-center">
+                            <p class="font-comic text-2xl text-white">⚡</p>
+                            <p class="font-ui text-xs text-white/90 font-bold">Rápido</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section Title -->
+            <div class="flex items-center gap-2 mt-2">
+                <div class="flex-1 h-1 bg-black"></div>
+                <h4 class="font-comic text-xl text-black">HERRAMIENTAS</h4>
+                <div class="flex-1 h-1 bg-black"></div>
+            </div>
+            
             <!-- Card: AI Chat -->
             <div onclick="nav.to('chat')" class="cursor-pointer group relative bg-cn-magenta border-comic shadow-hard p-6 flex flex-col items-center hover:bg-pink-600 transition-colors">
                 <div class="absolute -top-4 -right-4 bg-cn-cyan text-white border-comic px-3 py-1 font-comic rotate-6 z-10">
