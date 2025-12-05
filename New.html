@@ -217,6 +217,11 @@
                 <span class="font-ui font-bold">Contacto</span>
             </div>
             
+            <div onclick="nav.to('rate'); app.hideConfigMenu()" class="cursor-pointer p-3 hover:bg-gray-100 border-b border-gray-200 flex items-center gap-3">
+                <i data-lucide="star" class="w-5 h-5 text-yellow-500"></i>
+                <span class="font-ui font-bold">Calificar App</span>
+            </div>
+            
             <div onclick="nav.to('about'); app.hideConfigMenu()" class="cursor-pointer p-3 hover:bg-gray-100 flex items-center gap-3">
                 <i data-lucide="info" class="w-5 h-5 text-blue-600"></i>
                 <span class="font-ui font-bold">Acerca de</span>
@@ -264,28 +269,28 @@
     <!-- =======================
          4. SETTINGS SCREEN
          ======================= -->
-    <section id="screen-settings" class="screen z-30 bg-white flex flex-col">
+    <section id="screen-settings" class="screen z-30 bg-cn-cyan flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
-            <button onclick="nav.back()" class="bg-white text-black p-2 border-2 border-black rounded-full hover:scale-110 transition-transform">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
-            <h2 class="font-comic text-2xl tracking-wide">CONFIGURACIÓN</h2>
+            <h2 class="font-comic text-3xl tracking-wide">CONFIGURACIÓN</h2>
         </header>
         <div class="flex-1 p-6 overflow-y-auto">
-            <div class="space-y-4">
-                <div class="bg-gray-100 border-comic p-4">
-                    <h3 class="font-comic text-xl mb-3">CALIDAD DE EXPORTACIÓN</h3>
-                    <select class="w-full p-3 border-2 border-black font-ui">
+            <div class="space-y-6">
+                <div class="bg-white border-comic p-6 shadow-hard">
+                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta">💾 CALIDAD DE EXPORTACIÓN</h3>
+                    <select class="w-full p-4 border-comic font-ui font-bold text-lg shadow-hard-sm">
                         <option>Alta Calidad (PNG)</option>
                         <option>Calidad Media (JPG)</option>
                         <option>Compresión Máxima</option>
                     </select>
                 </div>
-                <div class="bg-gray-100 border-comic p-4">
-                    <h3 class="font-comic text-xl mb-3">TEMA DE LA APP</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button class="bg-cn-cyan text-white p-3 border-2 border-black font-comic">CLÁSICO</button>
-                        <button class="bg-cn-magenta text-white p-3 border-2 border-black font-comic">RETRO</button>
+                <div class="bg-white border-comic p-6 shadow-hard">
+                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta">🎨 TEMA DE LA APP</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button class="bg-cn-cyan text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">CLÁSICO</button>
+                        <button class="bg-cn-magenta text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">RETRO</button>
                     </div>
                 </div>
             </div>
@@ -295,26 +300,26 @@
     <!-- =======================
          5. HELP SCREEN
          ======================= -->
-    <section id="screen-help" class="screen z-30 bg-white flex flex-col">
-        <header class="bg-green-500 border-b-4 border-black p-4 flex items-center gap-3">
-            <button onclick="nav.back()" class="bg-white text-black p-2 border-2 border-black rounded-full hover:scale-110 transition-transform">
+    <section id="screen-help" class="screen z-30 bg-green-400 flex flex-col">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
-            <h2 class="font-comic text-2xl tracking-wide text-white">CENTRO DE AYUDA</h2>
+            <h2 class="font-comic text-3xl tracking-wide">CENTRO DE AYUDA</h2>
         </header>
         <div class="flex-1 p-6 overflow-y-auto">
-            <div class="space-y-4">
-                <div class="bg-cn-yellow border-comic p-4">
-                    <h3 class="font-comic text-xl mb-2">🎨 Cómo crear stickers</h3>
-                    <p class="font-ui">1. Elige "Crear con I.A." o "Subir Foto"<br>2. Edita con las herramientas<br>3. Guarda tu creación</p>
+            <div class="space-y-6">
+                <div class="bg-cn-yellow border-comic p-6 shadow-hard">
+                    <h3 class="font-comic text-2xl mb-3">🎨 Cómo crear stickers</h3>
+                    <p class="font-ui font-bold text-lg">1. Elige "Crear con I.A." o "Subir Foto"<br>2. Edita con las herramientas<br>3. Guarda tu creación</p>
                 </div>
-                <div class="bg-cn-cyan border-comic p-4">
-                    <h3 class="font-comic text-xl mb-2 text-white">✨ Consejos Pro</h3>
-                    <p class="font-ui text-white">- Usa descripciones detalladas en I.A.<br>- Combina texto y emojis<br>- Experimenta con colores</p>
+                <div class="bg-cn-cyan border-comic p-6 shadow-hard">
+                    <h3 class="font-comic text-2xl mb-3 text-white">✨ Consejos Pro</h3>
+                    <p class="font-ui font-bold text-white text-lg">- Usa descripciones detalladas en I.A.<br>- Combina texto y emojis<br>- Experimenta con colores</p>
                 </div>
-                <div class="bg-white border-comic p-4">
-                    <h3 class="font-comic text-xl mb-2">📱 Gestos Táctiles</h3>
-                    <p class="font-ui">- Toca para seleccionar<br>- Arrastra para mover<br>- Pellizca para escalar/rotar</p>
+                <div class="bg-white border-comic p-6 shadow-hard">
+                    <h3 class="font-comic text-2xl mb-3 text-cn-magenta">📱 Gestos Táctiles</h3>
+                    <p class="font-ui font-bold text-lg">- Toca para seleccionar<br>- Arrastra para mover<br>- Pellizca para escalar/rotar</p>
                 </div>
             </div>
         </div>
@@ -323,29 +328,63 @@
     <!-- =======================
          6. CONTACT SCREEN
          ======================= -->
-    <section id="screen-contact" class="screen z-30 bg-white flex flex-col">
-        <header class="bg-green-500 border-b-4 border-black p-4 flex items-center gap-3">
-            <button onclick="nav.back()" class="bg-white text-black p-2 border-2 border-black rounded-full hover:scale-110 transition-transform">
+    <section id="screen-contact" class="screen z-30 bg-cn-magenta flex flex-col">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
-            <h2 class="font-comic text-2xl tracking-wide text-white">CONTACTO</h2>
+            <h2 class="font-comic text-3xl tracking-wide">CONTACTO</h2>
         </header>
         <div class="flex-1 p-6 overflow-y-auto">
-            <div class="space-y-4">
-                <div class="bg-cn-yellow border-comic p-4 text-center">
-                    <i data-lucide="mail" class="w-16 h-16 mx-auto mb-3"></i>
-                    <h3 class="font-comic text-2xl mb-2">REPORTAR PROBLEMA</h3>
-                    <p class="font-ui mb-4">Descíbenos qué pasó y te ayudaremos</p>
-                    <button onclick="app.openEmail()" class="bg-cn-magenta text-white border-comic px-6 py-3 font-comic text-lg shadow-hard-sm">
+            <div class="space-y-6">
+                <div class="bg-cn-yellow border-comic p-6 text-center shadow-hard">
+                    <i data-lucide="mail" class="w-20 h-20 mx-auto mb-4"></i>
+                    <h3 class="font-comic text-3xl mb-3">REPORTAR PROBLEMA</h3>
+                    <p class="font-ui font-bold mb-6 text-lg">Descíbenos qué pasó y te ayudaremos</p>
+                    <button onclick="app.openEmail()" class="bg-cn-magenta text-white border-comic px-8 py-4 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
                         ENVIAR EMAIL
                     </button>
                 </div>
-                <div class="bg-cn-cyan border-comic p-4 text-center">
-                    <i data-lucide="star" class="w-16 h-16 mx-auto mb-3 text-white"></i>
-                    <h3 class="font-comic text-2xl mb-2 text-white">CALIFICAR APP</h3>
-                    <p class="font-ui mb-4 text-white">¿Te gusta StickerToons? ¡Danos 5 estrellas!</p>
-                    <button onclick="app.rateApp()" class="bg-cn-yellow text-black border-comic px-6 py-3 font-comic text-lg shadow-hard-sm">
-                        CALIFICAR
+            </div>
+        </div>
+    </section>
+
+    <!-- =======================
+         7. RATE APP SCREEN
+         ======================= -->
+    <section id="screen-rate" class="screen z-30 bg-cn-yellow flex flex-col">
+        <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </button>
+            <h2 class="font-comic text-3xl tracking-wide text-white">CALIFICAR APP</h2>
+        </header>
+        <div class="flex-1 p-6 overflow-y-auto flex flex-col justify-center">
+            <div class="text-center space-y-6">
+                <div class="bg-white border-comic p-8 shadow-hard">
+                    <i data-lucide="heart" class="w-24 h-24 mx-auto mb-4 text-red-500 fill-red-500"></i>
+                    <h3 class="font-comic text-4xl mb-4 text-cn-magenta">¿TE GUSTA STICKERTOONS?</h3>
+                    <p class="font-ui font-bold text-xl mb-6">¡Tu opinión nos ayuda a mejorar!</p>
+                </div>
+                
+                <div class="bg-cn-cyan border-comic p-6 shadow-hard">
+                    <h4 class="font-comic text-2xl mb-4 text-white">CALIFICA CON ESTRELLAS</h4>
+                    <div class="flex justify-center gap-2 mb-6">
+                        <button onclick="app.setRating(1)" class="star-btn text-4xl hover:scale-125 transition-transform">⭐</button>
+                        <button onclick="app.setRating(2)" class="star-btn text-4xl hover:scale-125 transition-transform">⭐</button>
+                        <button onclick="app.setRating(3)" class="star-btn text-4xl hover:scale-125 transition-transform">⭐</button>
+                        <button onclick="app.setRating(4)" class="star-btn text-4xl hover:scale-125 transition-transform">⭐</button>
+                        <button onclick="app.setRating(5)" class="star-btn text-4xl hover:scale-125 transition-transform">⭐</button>
+                    </div>
+                    <button onclick="app.submitRating()" class="bg-cn-yellow text-black border-comic px-8 py-4 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
+                        ENVIAR CALIFICACIÓN
+                    </button>
+                </div>
+                
+                <div class="bg-cn-magenta border-comic p-6 shadow-hard">
+                    <h4 class="font-comic text-2xl mb-4 text-white">COMPARTE CON AMIGOS</h4>
+                    <button onclick="app.shareApp()" class="bg-white text-cn-magenta border-comic px-8 py-4 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
+                        📤 COMPARTIR APP
                     </button>
                 </div>
             </div>
@@ -353,39 +392,39 @@
     </section>
 
     <!-- =======================
-         7. ABOUT SCREEN
+         8. ABOUT SCREEN
          ======================= -->
-    <section id="screen-about" class="screen z-30 bg-white flex flex-col">
-        <header class="bg-green-500 border-b-4 border-black p-4 flex items-center gap-3">
-            <button onclick="nav.back()" class="bg-white text-black p-2 border-2 border-black rounded-full hover:scale-110 transition-transform">
+    <section id="screen-about" class="screen z-30 bg-cn-cyan flex flex-col">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
-            <h2 class="font-comic text-2xl tracking-wide text-white">ACERCA DE</h2>
+            <h2 class="font-comic text-3xl tracking-wide">ACERCA DE</h2>
         </header>
         <div class="flex-1 p-6 overflow-y-auto text-center">
             <div class="space-y-6">
-                <div class="bg-cn-yellow border-comic p-6">
-                    <i data-lucide="zap" class="w-20 h-20 mx-auto mb-4 fill-cn-cyan text-black stroke-[3]"></i>
-                    <h3 class="font-comic text-3xl mb-2">StickerToons</h3>
-                    <p class="font-ui font-bold text-lg">Versión 2.1</p>
+                <div class="bg-cn-yellow border-comic p-8 shadow-hard">
+                    <i data-lucide="zap" class="w-24 h-24 mx-auto mb-4 fill-cn-cyan text-black stroke-[3]"></i>
+                    <h3 class="font-comic text-4xl mb-3">StickerToons</h3>
+                    <p class="font-ui font-bold text-2xl">Versión 2.1</p>
                 </div>
-                <div class="bg-white border-comic p-4">
-                    <h4 class="font-comic text-xl mb-3">CREADO CON ❤️</h4>
-                    <p class="font-ui">Una app para crear stickers increíbles con inteligencia artificial y herramientas de edición intuitivas.</p>
+                <div class="bg-white border-comic p-6 shadow-hard">
+                    <h4 class="font-comic text-2xl mb-4 text-cn-magenta">CREADO CON ❤️</h4>
+                    <p class="font-ui font-bold text-lg">Una app para crear stickers increíbles con inteligencia artificial y herramientas de edición intuitivas.</p>
                 </div>
-                <div class="bg-cn-cyan border-comic p-4">
-                    <h4 class="font-comic text-xl mb-3 text-white">TECNOLOGÍAS</h4>
-                    <p class="font-ui text-white">HTML5 Canvas • TailwindCSS • Lucide Icons • JavaScript ES6</p>
+                <div class="bg-cn-magenta border-comic p-6 shadow-hard">
+                    <h4 class="font-comic text-2xl mb-4 text-white">TECNOLOGÍAS</h4>
+                    <p class="font-ui font-bold text-white text-lg">HTML5 Canvas • TailwindCSS • Lucide Icons • JavaScript ES6</p>
                 </div>
-                <div class="text-center">
-                    <p class="font-ui text-sm text-gray-600">© 2024 StickerToons. Todos los derechos reservados.</p>
+                <div class="bg-white border-comic p-4 shadow-hard">
+                    <p class="font-ui font-bold text-gray-600">© 2024 StickerToons. Todos los derechos reservados.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- =======================
-         8. EDITOR SCREEN (CANVAS)
+         9. EDITOR SCREEN (CANVAS)
          ======================= -->
     <section id="screen-editor" class="screen z-30 bg-gray-100 flex flex-col">
         
@@ -1112,8 +1151,39 @@
                 window.open(`mailto:soporte@stickertoons.com?subject=${subject}&body=${body}`);
             },
 
-            rateApp: function() {
-                this.showMessage('¡Gracias por tu apoyo! Te redirigiremos a la tienda de aplicaciones.', '#39B54A');
+            // Funciones para calificar app
+            currentRating: 0,
+            
+            setRating: function(stars) {
+                this.currentRating = stars;
+                // Actualizar visualización de estrellas
+                document.querySelectorAll('.star-btn').forEach((btn, index) => {
+                    if (index < stars) {
+                        btn.style.filter = 'brightness(1.2) drop-shadow(0 0 10px gold)';
+                    } else {
+                        btn.style.filter = 'brightness(0.7)';
+                    }
+                });
+            },
+            
+            submitRating: function() {
+                if (this.currentRating === 0) {
+                    this.showMessage('Por favor selecciona una calificación primero');
+                    return;
+                }
+                this.showMessage(`¡Gracias por calificarnos con ${this.currentRating} estrellas! 🌟`, '#39B54A');
+            },
+            
+            shareApp: function() {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'StickerToons - Creador de Stickers',
+                        text: '¡Crea stickers increíbles con IA!',
+                        url: window.location.href
+                    });
+                } else {
+                    this.showMessage('¡Comparte StickerToons con tus amigos!');
+                }
             },
 
             showTemplates: function() {
