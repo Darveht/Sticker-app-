@@ -816,32 +816,29 @@
                     nav.to('home');
                 }, 1200);
 
-                // Interceptar navegación para secciones placeholder
-                this.setupPlaceholderNavigation();
-                
-                // Cerrar menú al cambiar de pantalla
-                const originalNavTo = nav.to;
-                nav.to = function(screenId) {
-                    app.hideConfigMenu();
-                    return originalNavTo.call(this, screenId);
-                };
+                // Interceptar navegación para funcionalidades especiales
+                this.setupNavigation();
             },
 
-            setupPlaceholderNavigation: function() {
+            setupNavigation: function() {
                 const originalNavTo = nav.to;
                 nav.to = function(screenId) {
+                    // Cerrar menú desplegable
+                    app.hideConfigMenu();
+                    
+                    // Manejar secciones placeholder
                     const placeholders = {
-                        'templates': () => app.showTemplates(),
-                        'gallery': () => app.showGallery(),
-                        'export-settings': () => app.showExportSettings()
+                        'gallery': () => app.showGallery()
                     };
                     
                     if (placeholders[screenId]) {
                         placeholders[screenId]();
                         return;
                     }
+                    
+                    // Navegación normal
                     originalNavTo.call(this, screenId);
-                }; 
+                };
             },
 
             handleUpload: function(e) {
