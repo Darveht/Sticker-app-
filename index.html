@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>StickerToons Creator</title>
+    <title>Zambik - Creador de Stickers</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -168,7 +168,7 @@
                 </div>
             </div>
             <h1 class="font-comic text-6xl tracking-wider uppercase text-cn-magenta drop-shadow-[4px_4px_0_#000]">
-                Sticker<br><span class="text-cn-cyan">Toons</span>
+                ZAMBIK
             </h1>
             <p class="font-ui font-bold mt-4 text-xl loading-dots">Cargando Motor Creativo</p>
         </div>
@@ -179,7 +179,7 @@
          ======================= -->
     <section id="screen-login" class="screen z-40 bg-cn-cyan flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 text-center">
-            <h2 class="font-comic text-4xl">STICKERTOONS</h2>
+            <h2 class="font-comic text-4xl">ZAMBIK</h2>
         </header>
         
         <div class="flex-1 flex items-center justify-center p-6 overflow-y-auto">
@@ -565,7 +565,7 @@
             <div class="text-center space-y-6">
                 <div class="bg-white border-comic p-8 shadow-hard">
                     <i data-lucide="heart" class="w-24 h-24 mx-auto mb-4 text-red-500 fill-red-500"></i>
-                    <h3 class="font-comic text-4xl mb-4 text-cn-magenta">¿TE GUSTA STICKERTOONS?</h3>
+                    <h3 class="font-comic text-4xl mb-4 text-cn-magenta">¿TE GUSTA ZAMBIK?</h3>
                     <p class="font-ui font-bold text-xl mb-6">¡Tu opinión nos ayuda a mejorar!</p>
                 </div>
                 
@@ -634,7 +634,7 @@
             <div class="space-y-6">
                 <div class="bg-cn-yellow border-comic p-8 shadow-hard">
                     <i data-lucide="zap" class="w-24 h-24 mx-auto mb-4 fill-cn-cyan text-black stroke-[3]"></i>
-                    <h3 class="font-comic text-4xl mb-3">StickerToons</h3>
+                    <h3 class="font-comic text-4xl mb-3">Zambik</h3>
                     <p class="font-ui font-bold text-2xl">Versión 2.1</p>
                 </div>
                 <div class="bg-white border-comic p-6 shadow-hard">
@@ -643,7 +643,7 @@
                 </div>
 
                 <div class="bg-white border-comic p-4 shadow-hard">
-                    <p class="font-ui font-bold text-gray-600">© 2024 StickerToons. Todos los derechos reservados.</p>
+                    <p class="font-ui font-bold text-gray-600">© 2024 Zambik. Todos los derechos reservados.</p>
                 </div>
             </div>
         </div>
@@ -1364,7 +1364,7 @@
                     try {
                         const blob = await (await fetch(url)).blob();
                         const file = new File([blob], 'sticker.png', {type:'image/png'});
-                        await navigator.share({files: [file], title: 'Mi StickerToons'});
+                        await navigator.share({files: [file], title: 'Mi Zambik'});
                         return;
                     } catch(e) {
                         console.warn('Share falló, haciendo fallback a descarga', e);
@@ -1389,7 +1389,7 @@
                 
                 // Guardar en localStorage
                 try {
-                    localStorage.setItem('stickertoons_gallery', JSON.stringify(this.savedStickers));
+                    localStorage.setItem('zambik_gallery', JSON.stringify(this.savedStickers));
                 } catch(e) {
                     console.warn('No se pudo guardar en localStorage', e);
                 }
@@ -1398,7 +1398,7 @@
             loadGallery: function() {
                 // Cargar desde localStorage
                 try {
-                    const saved = localStorage.getItem('stickertoons_gallery');
+                    const saved = localStorage.getItem('zambik_gallery');
                     if (saved) {
                         this.savedStickers = JSON.parse(saved);
                     }
@@ -1443,7 +1443,7 @@
             deleteSticker: function(id) {
                 this.showConfirm('¿Eliminar este sticker?', () => {
                     this.savedStickers = this.savedStickers.filter(s => s.id !== id);
-                    localStorage.setItem('stickertoons_gallery', JSON.stringify(this.savedStickers));
+                    localStorage.setItem('zambik_gallery', JSON.stringify(this.savedStickers));
                     this.loadGallery();
                 });
             },
@@ -1753,9 +1753,9 @@
 
             // Funciones para las nuevas secciones del menú
             openEmail: function() {
-                const subject = encodeURIComponent('Soporte StickerToons - Reporte de Problema');
-                const body = encodeURIComponent('Hola,\n\nTengo un problema con StickerToons:\n\n[Describe tu problema aquí]\n\nGracias!');
-                window.open(`mailto:soporte@stickertoons.com?subject=${subject}&body=${body}`);
+                const subject = encodeURIComponent('Soporte Zambik - Reporte de Problema');
+                const body = encodeURIComponent('Hola,\n\nTengo un problema con Zambik:\n\n[Describe tu problema aquí]\n\nGracias!');
+                window.open(`mailto:soporte@zambik.com?subject=${subject}&body=${body}`);
             },
 
             // Funciones para calificar app
@@ -1784,12 +1784,12 @@
             shareApp: function() {
                 if (navigator.share) {
                     navigator.share({
-                        title: 'StickerToons - Creador de Stickers',
+                        title: 'Zambik - Creador de Stickers',
                         text: '¡Crea stickers increíbles con IA!',
                         url: window.location.href
                     });
                 } else {
-                    this.showMessage('¡Comparte StickerToons con tus amigos!');
+                    this.showMessage('¡Comparte Zambik con tus amigos!');
                 }
             },
 
