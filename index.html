@@ -96,10 +96,18 @@
             left: 0;
             background: white;
             transition: opacity 0.25s ease-in-out;
+            overflow: hidden;
         }
         
         .screen.active {
             display: flex;
+        }
+        
+        /* Asegurar que headers siempre estén arriba */
+        .screen header {
+            position: relative;
+            z-index: 50;
+            flex-shrink: 0;
         }
 
         /* Input Styles */
@@ -162,7 +170,7 @@
          2. LOGIN SCREEN
          ======================= -->
     <section id="screen-login" class="screen z-40 bg-cn-cyan flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 text-center relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 text-center">
             <h2 class="font-comic text-4xl">STICKERTOONS</h2>
         </header>
         
@@ -209,7 +217,7 @@
          ======================= -->
     <section id="screen-home" class="screen z-30 bg-white flex flex-col">
         <!-- Header -->
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex justify-between items-center shadow-hard-sm z-40 relative">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex justify-between items-center shadow-hard-sm">
             <div class="flex items-center gap-2">
                 <div class="bg-black text-white p-1 rounded-sm"><i data-lucide="ghost" class="w-6 h-6"></i></div>
                 <h2 class="font-comic text-3xl">MENU PRINCIPAL</h2>
@@ -255,7 +263,7 @@
          3. MENU SCREEN
          ======================= -->
     <section id="screen-menu" class="screen z-30 bg-white flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -319,7 +327,7 @@
          4. GALLERY SCREEN (MIS CREACIONES)
          ======================= -->
     <section id="screen-gallery" class="screen z-30 bg-cn-magenta flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -349,7 +357,7 @@
          5. AI GENERATOR SCREEN
          ======================= -->
     <section id="screen-ai" class="screen z-30 bg-cn-magenta flex flex-col">
-        <header class="bg-black text-white p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-black text-white p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -427,7 +435,7 @@
          6. SETTINGS SCREEN
          ======================= -->
     <section id="screen-settings" class="screen z-30 bg-cn-cyan flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -477,7 +485,7 @@
          7. HELP SCREEN
          ======================= -->
     <section id="screen-help" class="screen z-30 bg-green-400 flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -505,7 +513,7 @@
          8. CONTACT SCREEN
          ======================= -->
     <section id="screen-contact" class="screen z-30 bg-cn-magenta flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -529,7 +537,7 @@
          9. RATE APP SCREEN
          ======================= -->
     <section id="screen-rate" class="screen z-30 bg-cn-yellow flex flex-col">
-        <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -571,7 +579,7 @@
          10. ABOUT SCREEN
          ======================= -->
     <section id="screen-about" class="screen z-30 bg-cn-cyan flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
