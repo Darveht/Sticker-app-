@@ -233,14 +233,14 @@
          3. AI GENERATOR SCREEN
          ======================= -->
     <section id="screen-ai" class="screen z-30 bg-cn-magenta flex flex-col">
-        <header class="bg-black text-white p-4 flex items-center gap-3">
-            <button onclick="nav.back()" class="bg-white text-black p-1 border-2 border-gray-500 rounded-full hover:scale-110 transition-transform">
+        <header class="bg-black text-white p-4 flex items-center gap-3 relative z-40">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
-            <h2 class="font-comic text-2xl tracking-wide">LABORATORIO DE STICKERS</h2>
+            <h2 class="font-comic text-3xl tracking-wide">LABORATORIO DE STICKERS</h2>
         </header>
 
-        <div class="flex-1 p-6 flex flex-col gap-6 justify-center">
+        <div class="flex-1 p-6 flex flex-col gap-6 justify-center overflow-y-auto">
             
             <div class="bg-white border-comic p-4 shadow-hard">
                 <label class="font-comic text-2xl block mb-2">¿QUÉ VAMOS A CREAR?</label>
@@ -270,7 +270,7 @@
          4. SETTINGS SCREEN
          ======================= -->
     <section id="screen-settings" class="screen z-30 bg-cn-cyan flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -289,8 +289,15 @@
                 <div class="bg-white border-comic p-6 shadow-hard">
                     <h3 class="font-comic text-2xl mb-4 text-cn-magenta">🎨 TEMA DE LA APP</h3>
                     <div class="grid grid-cols-2 gap-4">
-                        <button class="bg-cn-cyan text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">CLÁSICO</button>
-                        <button class="bg-cn-magenta text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">RETRO</button>
+                        <button id="theme-classic" onclick="app.setTheme('classic')" class="theme-btn bg-cn-cyan text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
+                            ✨ CLÁSICO
+                        </button>
+                        <button id="theme-retro" onclick="app.setTheme('retro')" class="theme-btn bg-cn-magenta text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
+                            🔥 RETRO
+                        </button>
+                    </div>
+                    <div class="mt-4 p-3 bg-gray-100 border-2 border-black">
+                        <p class="font-ui font-bold text-sm text-center">Tema actual: <span id="current-theme" class="text-cn-magenta">CLÁSICO</span></p>
                     </div>
                 </div>
             </div>
@@ -301,7 +308,7 @@
          5. HELP SCREEN
          ======================= -->
     <section id="screen-help" class="screen z-30 bg-green-400 flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -329,7 +336,7 @@
          6. CONTACT SCREEN
          ======================= -->
     <section id="screen-contact" class="screen z-30 bg-cn-magenta flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -353,7 +360,7 @@
          7. RATE APP SCREEN
          ======================= -->
     <section id="screen-rate" class="screen z-30 bg-cn-yellow flex flex-col">
-        <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3">
+        <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -395,7 +402,7 @@
          8. ABOUT SCREEN
          ======================= -->
     <section id="screen-about" class="screen z-30 bg-cn-cyan flex flex-col">
-        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
             <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i>
             </button>
@@ -844,6 +851,9 @@
 
                 // Instanciar motor y listeners
                 this.engine = new StickerEngine('sticker-canvas');
+                
+                // Inicializar tema
+                this.setTheme('classic');
 
                 // Listener de resize global
                 window.addEventListener('resize', () => {
@@ -1183,6 +1193,40 @@
                     });
                 } else {
                     this.showMessage('¡Comparte StickerToons con tus amigos!');
+                }
+            },
+
+            // Sistema de temas
+            currentTheme: 'classic',
+            
+            setTheme: function(theme) {
+                this.currentTheme = theme;
+                
+                // Actualizar indicador visual
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.style.transform = 'scale(1)';
+                    btn.style.boxShadow = '6px 6px 0px 0px #000000';
+                });
+                
+                const selectedBtn = document.getElementById(`theme-${theme}`);
+                if (selectedBtn) {
+                    selectedBtn.style.transform = 'scale(0.95) translateY(2px)';
+                    selectedBtn.style.boxShadow = '2px 2px 0px 0px #000000';
+                }
+                
+                // Actualizar texto del tema actual
+                const themeText = document.getElementById('current-theme');
+                if (themeText) {
+                    themeText.textContent = theme === 'classic' ? 'CLÁSICO' : 'RETRO';
+                }
+                
+                // Aplicar cambios de tema
+                if (theme === 'retro') {
+                    document.body.style.filter = 'sepia(0.3) saturate(1.2)';
+                    this.showMessage('🔥 Tema RETRO activado! Colores vintage aplicados.', '#FF6B35');
+                } else {
+                    document.body.style.filter = 'none';
+                    this.showMessage('✨ Tema CLÁSICO activado! Colores vibrantes restaurados.', '#00AEEF');
                 }
             },
 
