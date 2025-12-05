@@ -169,6 +169,15 @@
         .search-animate {
             animation: searchSpin 0.6s ease-in-out;
         }
+        
+        @keyframes slideIn {
+            0% { transform: translateX(-100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        
+        .amazon-item {
+            animation: slideIn 0.4s ease-out;
+        }
     </style>
 </head>
 <body class="text-cn-black h-screen w-screen overflow-hidden select-none">
@@ -299,6 +308,14 @@
                 <i data-lucide="images" class="w-20 h-20 mb-4 text-cn-magenta stroke-[3]"></i>
                 <h3 class="font-comic text-4xl text-cn-magenta">MIS CREACIONES</h3>
                 <p class="font-ui font-bold text-center mt-2 bg-gray-100 p-2 border-2 border-black text-sm">Ve tus stickers guardados.</p>
+            </div>
+
+            <!-- Card: Amazon Stickers -->
+            <div onclick="nav.to('amazon')" class="cursor-pointer bg-orange-500 border-comic shadow-hard p-6 flex flex-col items-center hover:bg-orange-600 transition-colors relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-yellow-300 opacity-30 rounded-full -mr-10 -mt-10 animate-pulse"></div>
+                <i data-lucide="shopping-cart" class="w-20 h-20 mb-4 text-white stroke-[3]"></i>
+                <h3 class="font-comic text-4xl text-white">AMAZON STICKERS</h3>
+                <p class="font-ui font-bold text-center mt-2 bg-white/30 p-2 border-2 border-black text-sm">Busca packs de stickers en Amazon.</p>
             </div>
 
         </div>
@@ -643,7 +660,46 @@
     </section>
 
     <!-- =======================
-         10. CAMERA SCREEN
+         10. AMAZON SCREEN
+         ======================= -->
+    <section id="screen-amazon" class="screen z-30 bg-orange-50 flex flex-col">
+        <header class="bg-orange-500 border-b-4 border-black p-4 flex items-center gap-3">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </button>
+            <h2 class="font-comic text-3xl tracking-wide text-white">AMAZON STICKERS</h2>
+        </header>
+
+        <div class="screen-content p-6 pt-2">
+            <div class="space-y-6">
+                <div class="bg-white border-comic p-4 shadow-hard">
+                    <label class="font-comic text-xl block mb-3 text-orange-600">BUSCAR EN AMAZON</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="amazon-search" placeholder="Ej: stickers kawaii, anime stickers..." class="flex-1 comic-input p-3 rounded-none" oninput="app.searchAmazon(this.value)">
+                        <button onclick="app.searchAmazon(document.getElementById('amazon-search').value)" class="bg-orange-500 text-white border-comic px-6 py-3 font-comic text-xl shadow-hard-sm hover:bg-orange-600 transition-colors">
+                            <i data-lucide="search" class="w-6 h-6"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="amazon-results" class="space-y-4">
+                    <div class="bg-white border-comic p-8 text-center shadow-hard">
+                        <i data-lucide="package-search" class="w-24 h-24 mx-auto mb-4 text-orange-400"></i>
+                        <h3 class="font-comic text-2xl mb-3 text-orange-600">BUSCA STICKERS</h3>
+                        <p class="font-ui font-bold text-lg">Escribe lo que buscas y encuentra packs de stickers en Amazon</p>
+                    </div>
+                </div>
+
+                <div id="amazon-loading" class="hidden bg-white border-comic p-6 text-center shadow-hard">
+                    <i data-lucide="loader" class="w-16 h-16 animate-spin mx-auto text-orange-500 mb-4"></i>
+                    <p class="font-comic text-2xl text-orange-600">BUSCANDO...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =======================
+         11. CAMERA SCREEN
          ======================= -->
     <section id="screen-camera" class="screen z-30 bg-black flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3">
@@ -2022,6 +2078,77 @@
                     content.classList.add('hidden');
                     arrow.style.transform = 'rotate(0deg)';
                 }
+            },
+            
+            searchAmazon: function(query) {
+                const resultsContainer = document.getElementById('amazon-results');
+                const loading = document.getElementById('amazon-loading');
+                
+                if (!query || query.trim().length < 3) {
+                    resultsContainer.innerHTML = `
+                        <div class="bg-white border-comic p-8 text-center shadow-hard">
+                            <i data-lucide="package-search" class="w-24 h-24 mx-auto mb-4 text-orange-400"></i>
+                            <h3 class="font-comic text-2xl mb-3 text-orange-600">BUSCA STICKERS</h3>
+                            <p class="font-ui font-bold text-lg">Escribe lo que buscas y encuentra packs de stickers en Amazon</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                    return;
+                }
+                
+                loading.classList.remove('hidden');
+                resultsContainer.innerHTML = '';
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    loading.classList.add('hidden');
+                    
+                    const searchQuery = encodeURIComponent(query + ' stickers');
+                    const amazonUrl = `https://www.amazon.com/s?k=${searchQuery}`;
+                    
+                    const mockResults = [
+                        { title: `Pack de Stickers ${query}`, price: '$12.99', rating: '4.5', image: '📦' },
+                        { title: `${query} Sticker Set Premium`, price: '$15.99', rating: '4.8', image: '🎨' },
+                        { title: `Colección ${query} 100+ Stickers`, price: '$9.99', rating: '4.3', image: '✨' },
+                        { title: `${query} Mega Pack Stickers`, price: '$19.99', rating: '4.7', image: '🌟' }
+                    ];
+                    
+                    resultsContainer.innerHTML = `
+                        <div class="bg-orange-500 border-comic p-4 shadow-hard text-center">
+                            <p class="font-comic text-xl text-white mb-3">RESULTADOS PARA: "${query}"</p>
+                            <a href="${amazonUrl}" target="_blank" class="inline-block bg-white text-orange-600 border-2 border-black px-6 py-3 font-comic text-lg shadow-hard-sm hover:scale-105 transition-transform">
+                                VER TODOS EN AMAZON →
+                            </a>
+                        </div>
+                    `;
+                    
+                    mockResults.forEach((item, index) => {
+                        const div = document.createElement('div');
+                        div.className = 'amazon-item bg-white border-comic p-4 shadow-hard hover:scale-105 transition-transform cursor-pointer';
+                        div.style.animationDelay = `${index * 0.1}s`;
+                        div.innerHTML = `
+                            <div class="flex gap-4">
+                                <div class="w-20 h-20 bg-orange-100 border-2 border-black flex items-center justify-center text-4xl">
+                                    ${item.image}
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-comic text-lg mb-2">${item.title}</h4>
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="font-ui font-bold text-orange-600 text-xl">${item.price}</span>
+                                        <span class="font-ui text-sm text-gray-600">⭐ ${item.rating}</span>
+                                    </div>
+                                    <button class="bg-orange-500 text-white border-2 border-black px-4 py-2 font-ui font-bold text-sm hover:bg-orange-600 transition-colors">
+                                        Ver en Amazon
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        div.onclick = () => window.open(amazonUrl, '_blank');
+                        resultsContainer.appendChild(div);
+                    });
+                    
+                    lucide.createIcons();
+                }, 1000);
             },
             
             animateSearch: function() {
