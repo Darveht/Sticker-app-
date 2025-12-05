@@ -258,7 +258,37 @@
     </section>
 
     <!-- =======================
-         4. AI GENERATOR SCREEN
+         4. GALLERY SCREEN (MIS CREACIONES)
+         ======================= -->
+    <section id="screen-gallery" class="screen z-30 bg-cn-magenta flex flex-col">
+        <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
+            <button onclick="nav.back()" class="bg-white text-black p-2 border-comic rounded-full hover:scale-110 transition-transform shadow-hard-sm">
+                <i data-lucide="arrow-left" class="w-6 h-6"></i>
+            </button>
+            <h2 class="font-comic text-3xl tracking-wide">MIS CREACIONES</h2>
+        </header>
+
+        <div class="flex-1 p-6 overflow-y-auto">
+            <div id="gallery-content" class="grid grid-cols-2 gap-4">
+                <!-- Los stickers se cargarán aquí dinámicamente -->
+            </div>
+            
+            <!-- Mensaje cuando no hay stickers -->
+            <div id="empty-gallery" class="flex flex-col items-center justify-center h-full">
+                <div class="bg-white border-comic p-8 text-center shadow-hard max-w-sm">
+                    <i data-lucide="image-off" class="w-24 h-24 mx-auto mb-4 text-gray-400"></i>
+                    <h3 class="font-comic text-3xl mb-3">AÚN NO HAY STICKERS</h3>
+                    <p class="font-ui font-bold text-lg mb-6">Crea tu primer sticker y aparecerá aquí</p>
+                    <button onclick="nav.to('home')" class="bg-cn-cyan text-white border-comic px-6 py-3 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
+                        CREAR AHORA
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- =======================
+         5. AI GENERATOR SCREEN
          ======================= -->
     <section id="screen-ai" class="screen z-30 bg-cn-magenta flex flex-col">
         <header class="bg-black text-white p-4 flex items-center gap-3 relative z-40">
@@ -302,7 +332,7 @@
     </section>
 
     <!-- =======================
-         5. SETTINGS SCREEN
+         6. SETTINGS SCREEN
          ======================= -->
     <section id="screen-settings" class="screen z-30 bg-cn-cyan flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
@@ -340,7 +370,7 @@
     </section>
 
     <!-- =======================
-         6. HELP SCREEN
+         7. HELP SCREEN
          ======================= -->
     <section id="screen-help" class="screen z-30 bg-green-400 flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
@@ -368,7 +398,7 @@
     </section>
 
     <!-- =======================
-         7. CONTACT SCREEN
+         8. CONTACT SCREEN
          ======================= -->
     <section id="screen-contact" class="screen z-30 bg-cn-magenta flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
@@ -392,7 +422,7 @@
     </section>
 
     <!-- =======================
-         8. RATE APP SCREEN
+         9. RATE APP SCREEN
          ======================= -->
     <section id="screen-rate" class="screen z-30 bg-cn-yellow flex flex-col">
         <header class="bg-cn-magenta border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
@@ -434,7 +464,7 @@
     </section>
 
     <!-- =======================
-         9. ABOUT SCREEN
+         10. ABOUT SCREEN
          ======================= -->
     <section id="screen-about" class="screen z-30 bg-cn-cyan flex flex-col">
         <header class="bg-cn-yellow border-b-4 border-black p-4 flex items-center gap-3 relative z-40">
@@ -463,7 +493,7 @@
     </section>
 
     <!-- =======================
-         10. EDITOR SCREEN (CANVAS)
+         11. EDITOR SCREEN (CANVAS)
          ======================= -->
     <section id="screen-editor" class="screen z-30 bg-gray-100 flex flex-col">
         
@@ -896,8 +926,9 @@
 
         // --- APP CONTROLLER ---
         const app = {
-            apiKey: "", // Pon tu API key aquí si dispones de una; si no, hay fallback local.
+            apiKey: "",
             engine: null,
+            savedStickers: [], // Array para guardar stickers
 
             init: function() {
                 // Lanzar icons lucide
@@ -934,14 +965,9 @@
             setupNavigation: function() {
                 const originalNavTo = nav.to;
                 nav.to = function(screenId) {
-                    // Manejar secciones placeholder
-                    const placeholders = {
-                        'gallery': () => app.showGallery()
-                    };
-                    
-                    if (placeholders[screenId]) {
-                        placeholders[screenId]();
-                        return;
+                    // Cargar galería cuando se abre
+                    if (screenId === 'gallery') {
+                        app.loadGallery();
                     }
                     
                     // Navegación normal
@@ -1084,6 +1110,9 @@
                 this.engine.draw();
                 const url = this.engine.canvas.toDataURL('image/png');
                 
+                // Guardar en la galería
+                this.saveToGallery(url);
+                
                 if(navigator.share && navigator.canShare && navigator.canShare({ files: [] })) {
                     try {
                         const blob = await (await fetch(url)).blob();
@@ -1098,7 +1127,108 @@
                 a.href = url;
                 a.download = 'sticker.png';
                 a.click();
-                this.showMessage("¡Exportación lista! Revisa tus descargas.", '#39B54A');
+                this.showMessage("¡Sticker guardado! Revisa 'Mis Creaciones'.", '#39B54A');
+            },
+            
+            // Funciones de galería
+            saveToGallery: function(imageUrl) {
+                const sticker = {
+                    id: Date.now(),
+                    url: imageUrl,
+                    date: new Date().toLocaleDateString()
+                };
+                
+                this.savedStickers.unshift(sticker);
+                
+                // Guardar en localStorage
+                try {
+                    localStorage.setItem('stickertoons_gallery', JSON.stringify(this.savedStickers));
+                } catch(e) {
+                    console.warn('No se pudo guardar en localStorage', e);
+                }
+            },
+            
+            loadGallery: function() {
+                // Cargar desde localStorage
+                try {
+                    const saved = localStorage.getItem('stickertoons_gallery');
+                    if (saved) {
+                        this.savedStickers = JSON.parse(saved);
+                    }
+                } catch(e) {
+                    console.warn('Error al cargar galería', e);
+                }
+                
+                const container = document.getElementById('gallery-content');
+                const emptyMsg = document.getElementById('empty-gallery');
+                
+                if (this.savedStickers.length === 0) {
+                    container.classList.add('hidden');
+                    emptyMsg.classList.remove('hidden');
+                    lucide.createIcons();
+                    return;
+                }
+                
+                container.classList.remove('hidden');
+                emptyMsg.classList.add('hidden');
+                container.innerHTML = '';
+                
+                this.savedStickers.forEach(sticker => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white border-comic shadow-hard overflow-hidden cursor-pointer hover:scale-105 transition-transform';
+                    card.innerHTML = `
+                        <img src="${sticker.url}" class="w-full h-40 object-contain bg-gray-100" alt="Sticker">
+                        <div class="p-2 flex justify-between items-center">
+                            <span class="font-ui text-xs font-bold text-gray-600">${sticker.date}</span>
+                            <button onclick="app.deleteSticker(${sticker.id}); event.stopPropagation();" class="text-red-500 hover:scale-110 transition-transform">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    card.onclick = () => this.viewSticker(sticker.url);
+                    container.appendChild(card);
+                });
+                
+                lucide.createIcons();
+            },
+            
+            deleteSticker: function(id) {
+                this.showConfirm('¿Eliminar este sticker?', () => {
+                    this.savedStickers = this.savedStickers.filter(s => s.id !== id);
+                    localStorage.setItem('stickertoons_gallery', JSON.stringify(this.savedStickers));
+                    this.loadGallery();
+                });
+            },
+            
+            viewSticker: function(url) {
+                const el = document.createElement('div');
+                el.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-[100] p-4';
+                el.innerHTML = `
+                    <div class="bg-white border-comic p-4 shadow-hard max-w-md w-full">
+                        <img src="${url}" class="w-full border-2 border-black mb-4" alt="Sticker">
+                        <div class="flex gap-2">
+                            <button onclick="app.downloadSticker('${url}')" class="flex-1 bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-cyan-400">
+                                DESCARGAR
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="flex-1 bg-gray-300 text-black border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-gray-400">
+                                CERRAR
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(el);
+                el.onclick = (e) => {
+                    if (e.target === el) el.remove();
+                };
+            },
+            
+            downloadSticker: function(url) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sticker_${Date.now()}.png`;
+                a.click();
+                this.showMessage('Sticker descargado!', '#39B54A');
             },
             
             // Funciones de Modales Personalizados (Reemplazando alerts/confirms/prompts)
@@ -1250,9 +1380,7 @@
                 this.showMessage('Próximamente: Plantillas prediseñadas para crear stickers rápidamente!');
             },
 
-            showGallery: function() {
-                this.showMessage('Próximamente: Galería de tus creaciones guardadas!');
-            },
+
 
             showExportSettings: function() {
                 this.showMessage('Próximamente: Configuración avanzada de exportación!');
