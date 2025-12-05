@@ -149,6 +149,16 @@
             0% { width: 0%; }
             100% { width: 100%; }
         }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }
+        
+        .recording {
+            animation: pulse 1s ease-in-out infinite;
+            background-color: #EF4444 !important;
+        }
     </style>
 </head>
 <body class="text-cn-black h-screen w-screen overflow-hidden select-none">
@@ -643,6 +653,9 @@
         <div class="bg-gray-100 border-t-4 border-black p-4">
             <div class="flex gap-2">
                 <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." class="flex-1 comic-input p-3 rounded-none" onkeypress="if(event.key==='Enter') app.sendChatMessage()">
+                <button id="voice-btn" onclick="app.toggleVoice()" class="bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
+                    <i data-lucide="mic" class="w-6 h-6"></i>
+                </button>
                 <button onclick="app.sendChatMessage()" class="bg-cn-magenta text-white border-comic px-6 py-3 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
                     <i data-lucide="send" class="w-6 h-6"></i>
                 </button>
@@ -1139,6 +1152,8 @@
             referenceImage: null,
             generationMode: 'new',
             cameraStream: null,
+            recognition: null,
+            isRecording: false,
 
             init: function() {
                 // Lanzar icons lucide
@@ -1717,6 +1732,64 @@
                 container.scrollTop = container.scrollHeight;
             },
             
+            toggleVoice: function() {
+                if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                    this.showMessage('Tu navegador no soporta reconocimiento de voz.');
+                    return;
+                }
+                
+                if (this.isRecording) {
+                    this.stopVoice();
+                } else {
+                    this.startVoice();
+                }
+            },
+            
+            startVoice: function() {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                this.recognition = new SpeechRecognition();
+                this.recognition.lang = 'es-ES';
+                this.recognition.continuous = false;
+                this.recognition.interimResults = false;
+                
+                this.recognition.onstart = () => {
+                    this.isRecording = true;
+                    const btn = document.getElementById('voice-btn');
+                    btn.classList.add('recording');
+                    lucide.createIcons();
+                };
+                
+                this.recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('chat-input').value = transcript;
+                    this.stopVoice();
+                };
+                
+                this.recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    this.stopVoice();
+                };
+                
+                this.recognition.onend = () => {
+                    this.stopVoice();
+                };
+                
+                this.recognition.start();
+            },
+            
+            stopVoice: function() {
+                if (this.recognition) {
+                    try { this.recognition.stop(); } catch(e) {}
+                    this.recognition = null;
+                }
+                this.isRecording = false;
+                const btn = document.getElementById('voice-btn');
+                if (btn) {
+                    btn.classList.remove('recording');
+                    lucide.createIcons();
+                }
+            },
+            
             generateImageFromChat: async function(prompt) {
                 try {
                     const cleanPrompt = prompt.replace(/genera|crea|dibuja|hazme|make|create|generate|draw/gi, '').trim();
@@ -1906,7 +1979,46 @@
                 this.showMessage('Próximamente: Configuración avanzada de exportación!');
             },
             
-            setMode: function() {}
+            setMode: function() {},
+            
+            addText: function() {
+                this.showPrompt("Escribe el texto de tu Sticker", "BOOM!", (t) => {
+                    if(t && this.engine) {
+                        this.engine.addObject({ type: 'text', text: t, size: 60, color: '#FFF200' });
+                    }
+                });
+            },
+            
+            addDeco: function() {
+                this.showPrompt("Introduce un Emoji", "🔥", (t) => {
+                    if(t && this.engine) {
+                        this.engine.addObject({ type: 'text', text: t, size: 80, color: 'white' });
+                    }
+                });
+            },
+            
+            clearCanvas: function() {
+                if (!this.engine) return;
+                this.showConfirm("¿Borrar todo?", () => {
+                    this.engine.objects = [];
+                    this.engine.selection = -1;
+                    this.engine.draw();
+                    this.engine.updateUI();
+                });
+            },
+            
+            export: async function() {
+                if (!this.engine) return;
+                this.engine.selection = -1;
+                this.engine.draw();
+                const url = this.engine.canvas.toDataURL('image/png');
+                this.saveToGallery(url);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'sticker.png';
+                a.click();
+                this.showMessage("¡Guardado!", '#39B54A');
+            }
         };
 
         window.onload = () => app.init();
