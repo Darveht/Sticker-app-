@@ -857,6 +857,15 @@
     </section>
 
     <script>
+        // --- MOBILE VIEWPORT FIX (for older browsers) ---
+        function setAppHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        setAppHeight();
+        window.addEventListener('resize', setAppHeight);
+        window.addEventListener('orientationchange', () => setTimeout(setAppHeight, 100));
+
         // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyCFQ_geG0HIv2EZ-bfKc97TJNtf2sdqPzc",
@@ -869,47 +878,60 @@
             measurementId: "G-P29ME5Z3S1"
         };
         
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch(e) {
+            console.warn('Firebase init error:', e);
+        }
+        const auth = firebase.auth ? firebase.auth() : null;
         
         // --- NAVIGATION CONTROLLER ---
         const nav = {
             history: ['splash'],
             to: function(screenId) {
-                // Verificar existencia
-                const target = document.getElementById('screen-' + screenId);
-                if(!target) {
-                    console.warn('Pantalla no encontrada:', screenId);
-                    return;
-                }
+                try {
+                    const target = document.getElementById('screen-' + screenId);
+                    if(!target) {
+                        console.warn('Pantalla no encontrada:', screenId);
+                        return;
+                    }
 
-                // Ocultar todas las pantallas
-                document.querySelectorAll('.screen').forEach(s => {
-                    s.classList.remove('active');
-                    s.style.opacity = 0;
-                });
+                    document.querySelectorAll('.screen').forEach(s => {
+                        s.classList.remove('active');
+                        s.style.opacity = '0';
+                    });
 
-                target.classList.add('active');
-                // Forzar repaint/animación suave
-                setTimeout(() => target.style.opacity = 1, 50);
+                    target.classList.add('active');
+                    target.scrollTop = 0;
+                    setTimeout(() => { target.style.opacity = '1'; }, 50);
 
-                // Ajustar canvas cuando se muestra el editor
-                if (screenId === 'editor' && app.engine) {
-                    // Small timeout to ensure layout settled
-                    setTimeout(() => app.engine.resize(), 60);
-                }
+                    if (screenId === 'editor' && typeof app !== 'undefined' && app.engine) {
+                        setTimeout(() => app.engine.resize(), 100);
+                    }
+                    
+                    if (screenId === 'gallery' && typeof app !== 'undefined') {
+                        app.loadGallery();
+                    }
+                    
+                    if (screenId === 'contact' && typeof app !== 'undefined') {
+                        app.loadArticles();
+                    }
 
-                // Historial básico
-                const last = this.history[this.history.length - 1];
-                if (!last || last !== screenId) {
-                    this.history.push(screenId);
+                    const last = this.history[this.history.length - 1];
+                    if (!last || last !== screenId) {
+                        this.history.push(screenId);
+                    }
+                    
+                    if (typeof lucide !== 'undefined') {
+                        setTimeout(() => lucide.createIcons(), 50);
+                    }
+                } catch(err) {
+                    console.error('Navigation error:', err);
                 }
             },
             back: function() {
                 if (this.history.length > 1) {
-                    // Quitar la pantalla actual
                     this.history.pop();
-                    // Tomar la previa
                     const prev = this.history[this.history.length - 1] || 'home';
                     this.to(prev);
                 } else {
@@ -1260,55 +1282,33 @@
             isRecording: false,
 
             init: function() {
-                // Lanzar icons lucide
-                lucide.createIcons();
-
-                // Instanciar motor y listeners
-                this.engine = new StickerEngine('sticker-canvas');
-                
-                // Inicializar tema sin mostrar mensaje
-                this.currentTheme = 'classic';
-                document.body.style.filter = 'none';
-                
-                // Cargar idioma guardado
-                const savedLang = localStorage.getItem('language') || 'es';
-                const langSelect = document.getElementById('language-select');
-                if (langSelect) langSelect.value = savedLang;
-                this.currentLanguage = savedLang;
-                
-                // Actualizar iconos de lucide cuando se navega
-                const originalNavTo = nav.to;
-                nav.to = function(screenId) {
-                    originalNavTo.call(this, screenId);
-                    setTimeout(() => lucide.createIcons(), 100);
-                };
-
-                // Listener de resize global
-                window.addEventListener('resize', () => {
-                    if(this.engine) this.engine.resize();
-                });
-
-                // Ir directo al home después del splash (sin autenticación obligatoria)
-                setTimeout(() => {
-                    nav.to('home');
-                    lucide.createIcons();
-                }, 1200);
-
-                // Interceptar navegación para funcionalidades especiales
-                this.setupNavigation();
-            },
-
-            setupNavigation: function() {
-                const originalNavTo = nav.to;
-                nav.to = function(screenId) {
-                    if (screenId === 'gallery') {
-                        app.loadGallery();
+                try {
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
                     }
-                    if (screenId === 'contact') {
-                        app.loadArticles();
-                    }
-                    originalNavTo.call(this, screenId);
-                };
+
+                    this.engine = new StickerEngine('sticker-canvas');
+                    
+                    this.currentTheme = 'classic';
+                    document.body.style.filter = 'none';
+                    
+                    const savedLang = localStorage.getItem('language') || 'es';
+                    const langSelect = document.getElementById('language-select');
+                    if (langSelect) langSelect.value = savedLang;
+                    this.currentLanguage = savedLang;
+
+                    window.addEventListener('resize', () => {
+                        if(this.engine) this.engine.resize();
+                        setAppHeight();
+                    });
+
+                    setTimeout(() => {
+                        nav.to('home');
+                    }, 1200);
+                } catch(err) {
+                    console.error('Init error:', err);
+                    setTimeout(() => nav.to('home'), 1500);
+                }
             },
 
             handleUpload: function(e) {
@@ -1679,6 +1679,11 @@
                     return this.showMessage('Completa todos los campos');
                 }
                 
+                if (!auth) {
+                    nav.to('home');
+                    return;
+                }
+                
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
                     nav.to('home');
@@ -1703,6 +1708,11 @@
                 
                 if (password.length < 6) {
                     return this.showMessage('La contraseña debe tener al menos 6 caracteres');
+                }
+                
+                if (!auth) {
+                    nav.to('home');
+                    return;
                 }
                 
                 try {
