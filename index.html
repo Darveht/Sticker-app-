@@ -670,8 +670,8 @@
             <h2 class="font-comic text-3xl tracking-wide text-white">AMAZON STICKERS</h2>
         </header>
 
-        <div class="screen-content p-6 pt-2">
-            <div class="space-y-6">
+        <div class="screen-content">
+            <div class="p-6 pt-2 space-y-6">
                 <div class="bg-white border-comic p-4 shadow-hard">
                     <label class="font-comic text-xl block mb-3 text-orange-600">BUSCAR EN AMAZON</label>
                     <div class="flex gap-2">
@@ -682,17 +682,17 @@
                     </div>
                 </div>
 
-                <div id="amazon-results" class="space-y-4">
+                <div id="amazon-loading" class="hidden bg-white border-comic p-6 text-center shadow-hard">
+                    <i data-lucide="loader" class="w-16 h-16 animate-spin mx-auto text-orange-500 mb-4"></i>
+                    <p class="font-comic text-2xl text-orange-600">BUSCANDO...</p>
+                </div>
+                
+                <div id="amazon-results" class="space-y-4 pb-6">
                     <div class="bg-white border-comic p-8 text-center shadow-hard">
                         <i data-lucide="package-search" class="w-24 h-24 mx-auto mb-4 text-orange-400"></i>
                         <h3 class="font-comic text-2xl mb-3 text-orange-600">BUSCA STICKERS</h3>
                         <p class="font-ui font-bold text-lg">Escribe lo que buscas y encuentra packs de stickers en Amazon</p>
                     </div>
-                </div>
-
-                <div id="amazon-loading" class="hidden bg-white border-comic p-6 text-center shadow-hard">
-                    <i data-lucide="loader" class="w-16 h-16 animate-spin mx-auto text-orange-500 mb-4"></i>
-                    <p class="font-comic text-2xl text-orange-600">BUSCANDO...</p>
                 </div>
             </div>
         </div>
