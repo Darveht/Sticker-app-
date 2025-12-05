@@ -1574,15 +1574,42 @@
                 this.addChatMessage(message, 'user');
                 input.value = '';
                 
-                const imageKeywords = ['genera', 'crea', 'dibuja', 'imagen', 'foto', 'sticker', 'generate', 'create', 'draw', 'image'];
+                const imageKeywords = ['genera', 'crea', 'dibuja', 'imagen', 'foto', 'sticker', 'generate', 'create', 'draw', 'image', 'picture', 'hazme', 'make'];
                 const wantsImage = imageKeywords.some(keyword => message.toLowerCase().includes(keyword));
                 
                 if (wantsImage) {
-                    this.addChatMessage('Generando imagen...', 'ai');
+                    this.addChatMessage('✨ Generando tu imagen...', 'ai');
                     await this.generateImageFromChat(message);
                 } else {
-                    this.addChatMessage('¡Puedo ayudarte a crear stickers! Dime qué quieres generar usando palabras como "genera", "crea" o "dibuja".', 'ai');
+                    await this.getChatResponse(message);
                 }
+            },
+            
+            getChatResponse: async function(message) {
+                const responses = {
+                    'hola': '¡Hola! 👋 ¿En qué puedo ayudarte hoy?',
+                    'ayuda': 'Puedo ayudarte a:\n• Generar stickers (di "genera un gato")\n• Crear imágenes personalizadas\n• Responder preguntas\n¿Qué necesitas?',
+                    'como': 'Para crear un sticker, solo dime "genera" seguido de lo que quieres. Por ejemplo: "genera un perro con gafas"',
+                    'que puedes': 'Puedo:\n✨ Generar imágenes y stickers\n💬 Chatear contigo\n🎨 Ayudarte a crear diseños\n\n¿Qué te gustaría hacer?',
+                    'gracias': '¡De nada! 😊 ¿Algo más en lo que pueda ayudarte?',
+                    'adios': '¡Hasta luego! 👋 Vuelve cuando quieras crear más stickers.',
+                };
+                
+                let response = null;
+                const lowerMsg = message.toLowerCase();
+                
+                for (const [key, value] of Object.entries(responses)) {
+                    if (lowerMsg.includes(key)) {
+                        response = value;
+                        break;
+                    }
+                }
+                
+                if (!response) {
+                    response = '🤔 Interesante... Si quieres que genere una imagen, usa palabras como "genera", "crea" o "dibuja". ¿En qué más puedo ayudarte?';
+                }
+                
+                setTimeout(() => this.addChatMessage(response, 'ai'), 500);
             },
             
             addChatMessage: function(text, sender) {
@@ -1596,23 +1623,37 @@
             
             generateImageFromChat: async function(prompt) {
                 try {
-                    const fullPrompt = encodeURIComponent(`${prompt}, sticker design, clean white background, high quality, cartoon style, vibrant colors`);
-                    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=512&height=512&seed=${Math.floor(Math.random() * 1000000)}&model=flux&nologo=true`;
+                    const cleanPrompt = prompt.replace(/genera|crea|dibuja|hazme|make|create|generate|draw/gi, '').trim();
+                    const fullPrompt = encodeURIComponent(`${cleanPrompt}, sticker design, clean white background, high quality, cartoon style, vibrant colors, simple, cute`);
+                    const seed = Math.floor(Math.random() * 1000000);
+                    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true&enhance=true`;
                     
-                    const container = document.getElementById('chat-messages');
-                    const imgDiv = document.createElement('div');
-                    imgDiv.className = 'bg-white mr-8 border-comic p-4 shadow-hard pop-in';
-                    imgDiv.innerHTML = `
-                        <img src="${imageUrl}" class="w-full border-2 border-black mb-2" alt="Generated" crossorigin="anonymous">
-                        <button onclick="app.loadImageToEditor('${imageUrl}')" class="w-full bg-cn-magenta text-white border-comic px-4 py-2 font-comic text-lg shadow-hard-sm hover:bg-pink-600">
-                            EDITAR STICKER
-                        </button>
-                    `;
-                    container.appendChild(imgDiv);
-                    container.scrollTop = container.scrollHeight;
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    
+                    img.onload = () => {
+                        const container = document.getElementById('chat-messages');
+                        const imgDiv = document.createElement('div');
+                        imgDiv.className = 'bg-white mr-8 border-comic p-4 shadow-hard pop-in';
+                        imgDiv.innerHTML = `
+                            <img src="${imageUrl}" class="w-full border-2 border-black mb-2 rounded" alt="Generated">
+                            <button onclick="app.loadImageToEditor('${imageUrl}')" class="w-full bg-cn-magenta text-white border-comic px-4 py-2 font-comic text-lg shadow-hard-sm hover:bg-pink-600 transition-colors">
+                                ✏️ EDITAR STICKER
+                            </button>
+                        `;
+                        container.appendChild(imgDiv);
+                        container.scrollTop = container.scrollHeight;
+                        lucide.createIcons();
+                    };
+                    
+                    img.onerror = () => {
+                        this.addChatMessage('❌ Error al generar imagen. Intenta con otra descripción.', 'ai');
+                    };
+                    
+                    img.src = imageUrl;
                 } catch(e) {
                     console.error('Image generation error:', e);
-                    this.addChatMessage('Error al generar imagen. Intenta de nuevo.', 'ai');
+                    this.addChatMessage('❌ Error al generar imagen. Intenta de nuevo.', 'ai');
                 }
             },
             
