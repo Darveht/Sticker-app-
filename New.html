@@ -854,23 +854,21 @@
                     nav.to('home');
                 }, 1200);
 
-                // Agregar manejadores para las nuevas secciones
-                this.setupNewSectionHandlers();
+                // Interceptar navegación para secciones placeholder
+                this.setupPlaceholderNavigation();
             },
 
-            setupNewSectionHandlers: function() {
-                // Manejadores para secciones que aún no tienen pantallas completas
-                const placeholderSections = {
-                    'templates': () => this.showTemplates(),
-                    'gallery': () => this.showGallery(),
-                    'export-settings': () => this.showExportSettings()
-                };
-
-                // Interceptar navegación a secciones placeholder
+            setupPlaceholderNavigation: function() {
                 const originalNavTo = nav.to;
                 nav.to = function(screenId) {
-                    if (placeholderSections[screenId]) {
-                        placeholderSections[screenId]();
+                    const placeholders = {
+                        'templates': () => app.showTemplates(),
+                        'gallery': () => app.showGallery(),
+                        'export-settings': () => app.showExportSettings()
+                    };
+                    
+                    if (placeholders[screenId]) {
+                        placeholders[screenId]();
                         return;
                     }
                     originalNavTo.call(this, screenId);
@@ -1141,7 +1139,7 @@
                 };
             },
 
-            // Nuevas funciones para las secciones agregadas
+            // Funciones para las nuevas secciones del menú
             openEmail: function() {
                 const subject = encodeURIComponent('Soporte StickerToons - Reporte de Problema');
                 const body = encodeURIComponent('Hola,\n\nTengo un problema con StickerToons:\n\n[Describe tu problema aquí]\n\nGracias!');
@@ -1150,13 +1148,8 @@
 
             rateApp: function() {
                 this.showMessage('¡Gracias por tu apoyo! Te redirigiremos a la tienda de aplicaciones.', '#39B54A');
-                // En una app real, aquí iría el link a la store
-                setTimeout(() => {
-                    // window.open('https://play.google.com/store/apps/details?id=com.stickertoons');
-                }, 1500);
             },
 
-            // Funciones placeholder para las nuevas secciones
             showTemplates: function() {
                 this.showMessage('Próximamente: Plantillas prediseñadas para crear stickers rápidamente!');
             },
