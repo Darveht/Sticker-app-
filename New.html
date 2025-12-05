@@ -123,6 +123,12 @@
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
         }
+        
+        /* Progress bar animation */
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
     </style>
 </head>
 <body class="text-cn-black h-screen w-screen overflow-hidden select-none">
@@ -248,10 +254,10 @@
             </div>
 
             <div class="flex flex-wrap gap-2">
-                <span onclick="app.setPrompt('cute cat with sunglasses')" class="bg-cn-yellow border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#GatoCool</span>
-                <span onclick="app.setPrompt('happy pizza slice cartoon')" class="bg-cn-cyan border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#Pizza</span>
-                <span onclick="app.setPrompt('rainbow unicorn kawaii')" class="bg-white border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105">#Unicornio</span>
-                <span onclick="app.setPrompt('smiling avocado character')" class="bg-cn-magenta border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 text-white">#Aguacate</span>
+                <span onclick="app.setPrompt('cute cat with sunglasses')" class="bg-cn-yellow border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 transition-transform">#GatoCool</span>
+                <span onclick="app.setPrompt('happy pizza slice')" class="bg-cn-cyan border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 transition-transform">#Pizza</span>
+                <span onclick="app.setPrompt('kawaii unicorn')" class="bg-white border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 transition-transform">#Unicornio</span>
+                <span onclick="app.setPrompt('smiling avocado')" class="bg-cn-magenta border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 text-white transition-transform">#Aguacate</span>
             </div>
 
             <button onclick="app.generateAI()" class="mt-4 bg-cn-yellow text-black border-comic shadow-hard py-4 px-6 font-comic text-3xl hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-3">
@@ -261,8 +267,14 @@
             
             <!-- Loading Indicator Inside -->
             <div id="ai-loader" class="hidden text-center mt-4">
-                <i data-lucide="loader" class="w-10 h-10 animate-spin mx-auto text-white"></i>
-                <p class="font-comic text-white text-xl mt-2">DIBUJANDO...</p>
+                <div class="bg-white border-comic p-6 shadow-hard">
+                    <i data-lucide="loader" class="w-16 h-16 animate-spin mx-auto text-cn-magenta mb-4"></i>
+                    <p class="font-comic text-2xl mb-2">GENERANDO...</p>
+                    <p class="font-ui font-bold text-sm">Esto puede tomar 10-15 segundos</p>
+                    <div class="mt-4 bg-gray-200 h-2 rounded-full overflow-hidden">
+                        <div class="progress-bar bg-cn-cyan h-full rounded-full" style="width: 0%; animation: progress 15s linear forwards;"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -766,7 +778,7 @@
                 const obj = this.objects[this.selection];
                 if(obj.type !== 'img') return;
 
-                // Lógica de remoción de fondo (asumiendo color de esquina)
+                // Algoritmo mejorado de remoción de fondo
                 const temp = document.createElement('canvas');
                 temp.width = obj.width;
                 temp.height = obj.height;
@@ -775,25 +787,47 @@
                 
                 let imageData;
                 try {
-                    imageData = tCtx.getImageData(0,0, temp.width, temp.height);
+                    imageData = tCtx.getImageData(0, 0, temp.width, temp.height);
                 } catch (err) {
                     console.warn('No se puede acceder a imageData (problema CORS).');
                     return;
                 }
                 const data = imageData.data;
                 
-                const r0=data[0], g0=data[1], b0=data[2];
-                const tolerance = 50; 
+                // Detectar color de fondo desde las esquinas
+                const corners = [
+                    [0, 0],
+                    [temp.width - 1, 0],
+                    [0, temp.height - 1],
+                    [temp.width - 1, temp.height - 1]
+                ];
+                
+                let avgR = 0, avgG = 0, avgB = 0;
+                corners.forEach(([x, y]) => {
+                    const idx = (y * temp.width + x) * 4;
+                    avgR += data[idx];
+                    avgG += data[idx + 1];
+                    avgB += data[idx + 2];
+                });
+                
+                avgR = Math.round(avgR / 4);
+                avgG = Math.round(avgG / 4);
+                avgB = Math.round(avgB / 4);
+                
+                const tolerance = 80; // Mayor tolerancia para mejores resultados
 
-                for(let i=0; i<data.length; i+=4) {
+                for(let i = 0; i < data.length; i += 4) {
                     const dist = Math.sqrt(
-                        (data[i] - r0)**2 + 
-                        (data[i+1] - g0)**2 + 
-                        (data[i+2] - b0)**2
+                        (data[i] - avgR) ** 2 + 
+                        (data[i + 1] - avgG) ** 2 + 
+                        (data[i + 2] - avgB) ** 2
                     );
                     
                     if(dist < tolerance) { 
-                        data[i+3] = 0; // Transparente
+                        data[i + 3] = 0; // Transparente
+                    } else if(dist < tolerance + 30) {
+                        // Suavizar bordes
+                        data[i + 3] = Math.round((dist - tolerance) / 30 * 255);
                     }
                 }
                 
@@ -804,7 +838,7 @@
                 newImg.onload = () => {
                     obj.img = newImg;
                     this.draw();
-                }
+                };
             }
 
             deleteObject() {
@@ -850,8 +884,9 @@
                 // Instanciar motor y listeners
                 this.engine = new StickerEngine('sticker-canvas');
                 
-                // Inicializar tema
-                this.setTheme('classic');
+                // Inicializar tema sin mostrar mensaje
+                this.currentTheme = 'classic';
+                document.body.style.filter = 'none';
 
                 // Listener de resize global
                 window.addEventListener('resize', () => {
@@ -941,31 +976,43 @@
 
                 const loader = document.getElementById('ai-loader');
                 loader.classList.remove('hidden');
+                
+                // Actualizar iconos de lucide para el loader
+                lucide.createIcons();
 
                 try {
-                    // Usar Pollinations AI - 100% gratis, sin límites
-                    const fullPrompt = encodeURIComponent(`sticker art, ${prompt}, white background, cartoon style, vibrant colors, simple design, vector art`);
+                    // Usar modelo mejorado con mejor calidad y fondos limpios
+                    const fullPrompt = encodeURIComponent(`${prompt}, sticker design, clean white background, high quality, cartoon style, vibrant colors, simple shapes, vector art, no shadows, flat design, isolated object`);
                     const seed = Math.floor(Math.random() * 1000000);
-                    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=512&height=512&seed=${seed}&nologo=true`;
+                    
+                    // Usar modelo flux que genera mejores stickers
+                    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true&enhance=true`;
+                    
+                    // Precargar imagen antes de navegar
+                    const response = await fetch(imageUrl);
+                    if (!response.ok) throw new Error('Error en la respuesta');
+                    
+                    const blob = await response.blob();
+                    const objectUrl = URL.createObjectURL(blob);
                     
                     // Cargar imagen
                     const img = new Image();
-                    img.crossOrigin = 'anonymous';
-                    
                     img.onload = () => {
-                        this.loadImageToEditor(imageUrl);
+                        loader.classList.add('hidden');
+                        this.loadImageToEditor(objectUrl);
                     };
                     
                     img.onerror = () => {
-                        throw new Error('Error al cargar imagen de IA');
+                        loader.classList.add('hidden');
+                        this.showMessage('Error al cargar imagen. Inténtalo de nuevo.');
                     };
                     
-                    img.src = imageUrl;
+                    img.src = objectUrl;
                     
                 } catch(e) {
                     console.error("AI Generation Error:", e);
-                    this.showMessage('Error al generar imagen. Verifica tu conexión e intenta de nuevo.');
                     loader.classList.add('hidden');
+                    this.showMessage('Error al generar imagen. Verifica tu conexión e intenta de nuevo.');
                 }
             },
 
@@ -1144,8 +1191,9 @@
             setTheme: function(theme) {
                 this.currentTheme = theme;
                 
-                // Actualizar indicador visual
-                document.querySelectorAll('.theme-btn').forEach(btn => {
+                // Actualizar indicador visual de botones
+                const buttons = document.querySelectorAll('.theme-btn');
+                buttons.forEach(btn => {
                     btn.style.transform = 'scale(1)';
                     btn.style.boxShadow = '6px 6px 0px 0px #000000';
                 });
@@ -1187,13 +1235,15 @@
             // Funciones para el menú desplegable
             toggleConfigMenu: function() {
                 const menu = document.getElementById('config-menu');
+                if (!menu) return;
+                
                 if (menu.classList.contains('hidden')) {
                     menu.classList.remove('hidden');
                     menu.classList.add('pop-in');
                     // Cerrar al hacer clic fuera
                     setTimeout(() => {
                         document.addEventListener('click', this.closeConfigMenuOutside.bind(this));
-                    }, 100);
+                    }, 50);
                 } else {
                     this.hideConfigMenu();
                 }
@@ -1201,15 +1251,19 @@
 
             hideConfigMenu: function() {
                 const menu = document.getElementById('config-menu');
-                menu.classList.add('hidden');
-                menu.classList.remove('pop-in');
+                if (menu) {
+                    menu.classList.add('hidden');
+                    menu.classList.remove('pop-in');
+                }
                 document.removeEventListener('click', this.closeConfigMenuOutside.bind(this));
             },
 
             closeConfigMenuOutside: function(e) {
                 const menu = document.getElementById('config-menu');
-                const button = e.target.closest('button');
-                if (!menu.contains(e.target) && !button) {
+                if (!menu) return;
+                
+                const menuButton = e.target.closest('[onclick*="toggleConfigMenu"]');
+                if (!menu.contains(e.target) && !menuButton) {
                     this.hideConfigMenu();
                 }
             }
