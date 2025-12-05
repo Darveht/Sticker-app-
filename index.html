@@ -39,9 +39,16 @@
 
     <style>
         /* ESTILOS GLOBALES Y PATRONES */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
         body {
             background-color: #00AEEF;
-            overflow: hidden; /* Evitar scroll global */
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         /* Patrón de puntos estilo cómic (Halftone) */
@@ -51,9 +58,10 @@
             background-position: 0 0, 5px 5px;
             background-size: 10px 10px;
             opacity: 0.1;
-            position: absolute;
+            position: fixed;
             inset: 0;
             z-index: -1;
+            pointer-events: none;
         }
 
         /* Bordes gruesos */
@@ -85,18 +93,24 @@
             animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* Utilidad para ocultar pantallas */
+        /* Utilidad para ocultar pantallas - MOBILE FIX: usar dvh y permitir scroll */
         .screen {
             display: none;
             width: 100%;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 100dvh;
             flex-direction: column;
             position: fixed;
             top: 0;
             left: 0;
+            right: 0;
+            bottom: 0;
             background: white;
             transition: opacity 0.25s ease-in-out;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: env(safe-area-inset-bottom, 0);
         }
         
         .screen.active {
@@ -105,7 +119,8 @@
         
         /* Headers fijos en la parte superior */
         .screen header {
-            position: relative;
+            position: sticky;
+            top: 0;
             z-index: 100;
             flex-shrink: 0;
         }
@@ -116,6 +131,7 @@
             overflow-y: auto;
             overflow-x: hidden;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
         /* Input Styles */
@@ -180,7 +196,7 @@
         }
     </style>
 </head>
-<body class="text-cn-black h-screen w-screen overflow-hidden select-none">
+<body class="text-cn-black min-h-screen w-full">
 
     <!-- BACKGROUND PATTERN -->
     <div class="halftone-bg"></div>
