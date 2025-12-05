@@ -1080,16 +1080,10 @@
                     if(this.engine) this.engine.resize();
                 });
 
-                // Verificar autenticación después del splash
+                // Ir directo al home después del splash (sin autenticación obligatoria)
                 setTimeout(() => {
-                    auth.onAuthStateChanged(user => {
-                        if (user) {
-                            nav.to('home');
-                        } else {
-                            nav.to('login');
-                        }
-                        lucide.createIcons();
-                    });
+                    nav.to('home');
+                    lucide.createIcons();
                 }, 1200);
 
                 // Interceptar navegación para funcionalidades especiales
