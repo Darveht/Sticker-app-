@@ -280,7 +280,7 @@
         <div class="flex-1 p-6 overflow-y-auto">
             <div class="space-y-6">
                 <div class="bg-white border-comic p-6 shadow-hard">
-                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta">💾 CALIDAD DE EXPORTACIÓN</h3>
+                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta">CALIDAD DE EXPORTACIÓN</h3>
                     <select class="w-full p-4 border-comic font-ui font-bold text-lg shadow-hard-sm">
                         <option>Alta Calidad (PNG)</option>
                         <option>Calidad Media (JPG)</option>
@@ -288,13 +288,13 @@
                     </select>
                 </div>
                 <div class="bg-white border-comic p-6 shadow-hard">
-                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta">🎨 TEMA DE LA APP</h3>
+                    <h3 class="font-comic text-2xl mb-4 text-cn-magenta">TEMA DE LA APP</h3>
                     <div class="grid grid-cols-2 gap-4">
                         <button id="theme-classic" onclick="app.setTheme('classic')" class="theme-btn bg-cn-cyan text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
-                            ✨ CLÁSICO
+                            CLÁSICO
                         </button>
                         <button id="theme-retro" onclick="app.setTheme('retro')" class="theme-btn bg-cn-magenta text-white p-4 border-comic font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
-                            🔥 RETRO
+                            RETRO
                         </button>
                     </div>
                     <div class="mt-4 p-3 bg-gray-100 border-2 border-black">
@@ -318,15 +318,15 @@
         <div class="flex-1 p-6 overflow-y-auto">
             <div class="space-y-6">
                 <div class="bg-cn-yellow border-comic p-6 shadow-hard">
-                    <h3 class="font-comic text-2xl mb-3">🎨 Cómo crear stickers</h3>
+                    <h3 class="font-comic text-2xl mb-3">Cómo crear stickers</h3>
                     <p class="font-ui font-bold text-lg">1. Elige "Crear Stickers" o "Subir Foto"<br>2. Edita con las herramientas<br>3. Guarda tu creación</p>
                 </div>
                 <div class="bg-cn-cyan border-comic p-6 shadow-hard">
-                    <h3 class="font-comic text-2xl mb-3 text-white">✨ Consejos Pro</h3>
+                    <h3 class="font-comic text-2xl mb-3 text-white">Consejos Pro</h3>
                     <p class="font-ui font-bold text-white text-lg">- Usa descripciones detalladas<br>- Combina texto y emojis<br>- Experimenta con colores</p>
                 </div>
                 <div class="bg-white border-comic p-6 shadow-hard">
-                    <h3 class="font-comic text-2xl mb-3 text-cn-magenta">📱 Gestos Táctiles</h3>
+                    <h3 class="font-comic text-2xl mb-3 text-cn-magenta">Gestos Táctiles</h3>
                     <p class="font-ui font-bold text-lg">- Toca para seleccionar<br>- Arrastra para mover<br>- Pellizca para escalar/rotar</p>
                 </div>
             </div>
@@ -392,7 +392,7 @@
                 <div class="bg-cn-magenta border-comic p-6 shadow-hard">
                     <h4 class="font-comic text-2xl mb-4 text-white">COMPARTE CON AMIGOS</h4>
                     <button onclick="app.shareApp()" class="bg-white text-cn-magenta border-comic px-8 py-4 font-comic text-xl shadow-hard hover:translate-y-1 hover:shadow-none transition-all">
-                        📤 COMPARTIR APP
+                        COMPARTIR APP
                     </button>
                 </div>
             </div>
@@ -417,13 +417,10 @@
                     <p class="font-ui font-bold text-2xl">Versión 2.1</p>
                 </div>
                 <div class="bg-white border-comic p-6 shadow-hard">
-                    <h4 class="font-comic text-2xl mb-4 text-cn-magenta">CREADO CON ❤️</h4>
+                    <h4 class="font-comic text-2xl mb-4 text-cn-magenta">CREADO CON AMOR</h4>
                     <p class="font-ui font-bold text-lg">Una app para crear stickers increíbles con herramientas de edición intuitivas y generación automática.</p>
                 </div>
-                <div class="bg-cn-magenta border-comic p-6 shadow-hard">
-                    <h4 class="font-comic text-2xl mb-4 text-white">TECNOLOGÍAS</h4>
-                    <p class="font-ui font-bold text-white text-lg">HTML5 Canvas • TailwindCSS • Lucide Icons • JavaScript ES6</p>
-                </div>
+
                 <div class="bg-white border-comic p-4 shadow-hard">
                     <p class="font-ui font-bold text-gray-600">© 2024 StickerToons. Todos los derechos reservados.</p>
                 </div>
@@ -1126,7 +1123,7 @@
                     this.showMessage('Por favor selecciona una calificación primero');
                     return;
                 }
-                this.showMessage(`¡Gracias por calificarnos con ${this.currentRating} estrellas! 🌟`, '#39B54A');
+                this.showMessage(`¡Gracias por calificarnos con ${this.currentRating} estrellas!`, '#39B54A');
             },
             
             shareApp: function() {
@@ -1168,10 +1165,10 @@
                 // Aplicar cambios de tema
                 if (theme === 'retro') {
                     document.body.style.filter = 'sepia(0.3) saturate(1.2)';
-                    this.showMessage('🔥 Tema RETRO activado! Colores vintage aplicados.', '#FF6B35');
+                    this.showMessage('Tema RETRO activado! Colores vintage aplicados.', '#FF6B35');
                 } else {
                     document.body.style.filter = 'none';
-                    this.showMessage('✨ Tema CLÁSICO activado! Colores vibrantes restaurados.', '#00AEEF');
+                    this.showMessage('Tema CLÁSICO activado! Colores vibrantes restaurados.', '#00AEEF');
                 }
             },
 
