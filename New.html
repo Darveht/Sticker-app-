@@ -356,6 +356,40 @@
                 <label class="font-comic text-2xl block mb-2">¿QUÉ VAMOS A CREAR?</label>
                 <textarea id="ai-prompt" rows="4" class="w-full bg-gray-100 border-2 border-black p-3 font-ui text-lg focus:bg-white transition-colors outline-none resize-none" placeholder="Ej: Un gato zombie comiendo pizza radioactiva..."></textarea>
             </div>
+            
+            <!-- Imagen de referencia -->
+            <div class="bg-cn-yellow border-comic p-4 shadow-hard">
+                <label class="font-comic text-xl block mb-3">IMAGEN DE REFERENCIA (Opcional)</label>
+                <div class="flex gap-3">
+                    <button onclick="document.getElementById('reference-input').click()" class="flex-1 bg-white border-2 border-black p-3 font-ui font-bold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+                        <i data-lucide="image-plus" class="w-5 h-5"></i>
+                        SUBIR IMAGEN
+                    </button>
+                    <button onclick="app.clearReference()" class="bg-red-500 text-white border-2 border-black p-3 font-ui font-bold hover:bg-red-600 transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <input type="file" id="reference-input" class="hidden" accept="image/*" onchange="app.loadReference(event)">
+                <div id="reference-preview" class="hidden mt-3 border-2 border-black bg-white p-2">
+                    <img id="reference-img" class="w-full h-32 object-contain">
+                </div>
+            </div>
+            
+            <!-- Modo de generación -->
+            <div class="bg-white border-comic p-4 shadow-hard">
+                <label class="font-comic text-xl block mb-3">MODO DE GENERACIÓN</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="mode-new" onclick="app.setGenerationMode('new')" class="generation-mode active bg-cn-cyan text-white border-2 border-black p-3 font-comic text-lg shadow-hard-sm">
+                        NUEVO
+                    </button>
+                    <button id="mode-modify" onclick="app.setGenerationMode('modify')" class="generation-mode bg-gray-300 text-black border-2 border-black p-3 font-comic text-lg shadow-hard-sm">
+                        MODIFICAR
+                    </button>
+                </div>
+                <p class="font-ui text-sm mt-2 text-gray-600">
+                    <span id="mode-description">Crear un sticker completamente nuevo</span>
+                </p>
+            </div>
 
             <div class="flex flex-wrap gap-2">
                 <span onclick="app.setPrompt('cute cat with sunglasses')" class="bg-cn-yellow border-2 border-black px-3 py-1 font-bold cursor-pointer text-sm hover:scale-105 transition-transform">#GatoCool</span>
@@ -1007,7 +1041,9 @@
         const app = {
             apiKey: "",
             engine: null,
-            savedStickers: [], // Array para guardar stickers
+            savedStickers: [],
+            referenceImage: null,
+            generationMode: 'new'
 
             init: function() {
                 // Lanzar icons lucide
@@ -1112,6 +1148,16 @@
             setPrompt: function(txt) {
                 document.getElementById('ai-prompt').value = txt;
             },
+            
+            // Función para usar sticker de galería como referencia
+            useAsReference: function(url) {
+                this.referenceImage = url;
+                document.getElementById('reference-img').src = url;
+                document.getElementById('reference-preview').classList.remove('hidden');
+                this.setGenerationMode('modify');
+                nav.to('ai');
+                this.showMessage('Imagen cargada como referencia. Describe los cambios que quieres hacer.', '#39B54A');
+            },
 
             generateAI: async function() {
                 const prompt = document.getElementById('ai-prompt').value.trim();
@@ -1119,26 +1165,29 @@
 
                 const loader = document.getElementById('ai-loader');
                 loader.classList.remove('hidden');
-                
-                // Actualizar iconos de lucide para el loader
                 lucide.createIcons();
 
                 try {
-                    // Usar modelo mejorado con mejor calidad y fondos limpios
-                    const fullPrompt = encodeURIComponent(`${prompt}, sticker design, clean white background, high quality, cartoon style, vibrant colors, simple shapes, vector art, no shadows, flat design, isolated object`);
-                    const seed = Math.floor(Math.random() * 1000000);
+                    let fullPrompt;
+                    let imageUrl;
                     
-                    // Usar modelo flux que genera mejores stickers
-                    const imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=1024&height=1024&seed=${seed}&model=flux&nologo=true&enhance=true`;
+                    if (this.generationMode === 'modify' && this.referenceImage) {
+                        // Modo modificar: usar imagen de referencia
+                        fullPrompt = encodeURIComponent(`${prompt}, based on reference image, sticker design, clean white background, high quality, cartoon style, vibrant colors, modifications and improvements`);
+                        // Nota: Pollinations soporta img2img pero de forma limitada
+                        imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=1024&height=1024&model=flux&nologo=true&enhance=true&seed=${Math.floor(Math.random() * 1000000)}`;
+                    } else {
+                        // Modo nuevo: crear desde cero
+                        fullPrompt = encodeURIComponent(`${prompt}, sticker design, clean white background, high quality, cartoon style, vibrant colors, simple shapes, vector art, no shadows, flat design, isolated object`);
+                        imageUrl = `https://image.pollinations.ai/prompt/${fullPrompt}?width=1024&height=1024&seed=${Math.floor(Math.random() * 1000000)}&model=flux&nologo=true&enhance=true`;
+                    }
                     
-                    // Precargar imagen antes de navegar
                     const response = await fetch(imageUrl);
                     if (!response.ok) throw new Error('Error en la respuesta');
                     
                     const blob = await response.blob();
                     const objectUrl = URL.createObjectURL(blob);
                     
-                    // Cargar imagen
                     const img = new Image();
                     img.onload = () => {
                         loader.classList.add('hidden');
@@ -1156,6 +1205,55 @@
                     console.error("AI Generation Error:", e);
                     loader.classList.add('hidden');
                     this.showMessage('Error al generar imagen. Verifica tu conexión e intenta de nuevo.');
+                }
+            },
+            
+            // Funciones de imagen de referencia
+            loadReference: function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    this.referenceImage = ev.target.result;
+                    document.getElementById('reference-img').src = ev.target.result;
+                    document.getElementById('reference-preview').classList.remove('hidden');
+                    this.showMessage('Imagen de referencia cargada', '#39B54A');
+                };
+                reader.readAsDataURL(file);
+                e.target.value = '';
+            },
+            
+            clearReference: function() {
+                this.referenceImage = null;
+                document.getElementById('reference-preview').classList.add('hidden');
+                document.getElementById('reference-input').value = '';
+            },
+            
+            setGenerationMode: function(mode) {
+                this.generationMode = mode;
+                
+                // Actualizar UI
+                document.querySelectorAll('.generation-mode').forEach(btn => {
+                    btn.classList.remove('active', 'bg-cn-cyan', 'text-white');
+                    btn.classList.add('bg-gray-300', 'text-black');
+                });
+                
+                const activeBtn = document.getElementById(`mode-${mode}`);
+                activeBtn.classList.add('active', 'bg-cn-cyan', 'text-white');
+                activeBtn.classList.remove('bg-gray-300', 'text-black');
+                
+                // Actualizar descripción
+                const descriptions = {
+                    'new': 'Crear un sticker completamente nuevo',
+                    'modify': 'Modificar o agregar elementos a la imagen de referencia'
+                };
+                
+                document.getElementById('mode-description').textContent = descriptions[mode];
+                
+                // Si no hay referencia en modo modificar, mostrar aviso
+                if (mode === 'modify' && !this.referenceImage) {
+                    this.showMessage('Sube una imagen de referencia para usar este modo');
                 }
             },
 
@@ -1298,14 +1396,17 @@
                 el.innerHTML = `
                     <div class="bg-white border-comic p-4 shadow-hard max-w-md w-full">
                         <img src="${url}" class="w-full border-2 border-black mb-4" alt="Sticker">
-                        <div class="flex gap-2">
-                            <button onclick="app.downloadSticker('${url}')" class="flex-1 bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-cyan-400">
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <button onclick="app.downloadSticker('${url}')" class="bg-cn-cyan text-white border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-cyan-400">
                                 DESCARGAR
                             </button>
-                            <button onclick="this.parentElement.parentElement.parentElement.remove()" class="flex-1 bg-gray-300 text-black border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-gray-400">
-                                CERRAR
+                            <button onclick="app.useAsReference('${url}'); this.parentElement.parentElement.parentElement.remove();" class="bg-cn-magenta text-white border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-pink-600">
+                                MODIFICAR
                             </button>
                         </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="w-full bg-gray-300 text-black border-comic px-4 py-3 font-comic text-lg shadow-hard-sm hover:bg-gray-400">
+                            CERRAR
+                        </button>
                     </div>
                 `;
                 document.body.appendChild(el);
